@@ -1,0 +1,1 @@
+# Bachelorsthesis-How-to-win-in-checkers-
