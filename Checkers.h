@@ -6,7 +6,7 @@
 class Checkers{
     public:
 
-        bool whoistomove;
+        bool whoistomove = false;
         char board[8][8];
         int blackpieces, whitepieces; //amount pieces each side
 
@@ -19,6 +19,7 @@ class Checkers{
         bool validmoveblack(int i, int j, int i2, int j2);
         void dohumanwhitemove();
         void dohumanblackmove();
+        void playthegame();
 
     private:
 

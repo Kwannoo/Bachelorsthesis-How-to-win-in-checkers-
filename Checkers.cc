@@ -82,12 +82,14 @@ bool Checkers::validmovewhite(int i, int j, int i2, int j2){
 
     if ((j - 1 == j2 || j + 1 == j2) && i - 1 == i2){
         if (board[i2][j2] == 'o'){ //return true
+            board[i2][j2] = 'w';
             return true;
         }
         if (board[i2][j2] == 'b'){
             if (j - 1 == j2){
                 if (board[i-2][j-2] == 'o'){
-                    board[i-1][j-2] = 'o'; //take black piece
+                    board[i-1][j-1] = 'o'; //take black piece
+                    board[i-2][j-2] == 'w';
                     blackpieces--;
                     return true;
                 }
@@ -95,7 +97,8 @@ bool Checkers::validmovewhite(int i, int j, int i2, int j2){
             }
             if (j + 1 == j2){
                 if (board[i-2][j+2] == 'o'){
-                    board[i-1][j-2] = 'o'; //take black piece
+                    board[i-1][j+1] = 'o'; //take black piece
+                    board[i-2][j+2] == 'w';
                     blackpieces--;
                     return true;
                 }
@@ -122,12 +125,14 @@ bool Checkers::validmoveblack(int i, int j, int i2, int j2){
 
     if ((j - 1 == j2 || j + 1 == j2) && i + 1 == i2){
         if (board[i2][j2] == 'o'){ //return true
+            board[i2][j2] = 'b';
             return true;
         }
         if (board[i2][j2] == 'w'){
             if (j - 1 == j2){
-                if (board[i+2][j+2] == 'o'){
-                    board[i+1][j-2] = 'o'; //take white piece
+                if (board[i+2][j-2] == 'o'){
+                    board[i+1][j-1] = 'o'; //take white piece
+                    board[i+2][j-2] == 'b';
                     whitepieces--;
                     return true;
                 }
@@ -135,7 +140,8 @@ bool Checkers::validmoveblack(int i, int j, int i2, int j2){
             }
             if (j + 1 == j2){
                 if (board[i+2][j+2] == 'o'){
-                    board[i+1][j-2] = 'o'; //take black piece
+                    board[i+1][j+1] = 'o'; //take black piece
+                    board[i+2][j+2] = 'b';
                     whitepieces--;
                     return true;
                 }
@@ -168,13 +174,13 @@ void Checkers::dohumanwhitemove(){
             std::cout << "Fill in vertical coordinate (0-7)" << std::endl;
             std::cin >> i2;
             if (validmovewhite(i, j, i2, j2)){
-                    board[i][j]  = 'o';
-                    board[i2][j2] = 'w';
-                    valid = true;
+                valid = true;
+                board[i][j] = 'o';
             }
-            else{
+            
+            else
                 std::cout << "Invalid move please enter correctly\n" << std::endl;
-            }
+            
         }
         else{
             std::cout << "Invalid move please enter correctly\n" << std::endl;
@@ -208,9 +214,8 @@ void Checkers::dohumanblackmove(){
             std::cout << "Fill in vertical coordinate (0-7)" << std::endl;
             std::cin >> i2;
             if (validmoveblack(i, j, i2, j2)){
-                    board[i][j]  = 'o';
-                    board[i2][j2] = 'b';
-                    valid = true;
+                valid = true;
+                board[i][j] = 'o';
             }
             else{
                 std::cout << "Invalid move please enter correctly\n" << std::endl;
@@ -226,14 +231,26 @@ void Checkers::dohumanblackmove(){
     
 }
 
+void Checkers::playthegame(){
+    while (blackpieces != 0 || whitepieces != 0){
+        if (!whoistomove){
+            dohumanblackmove();
+        }
+        else{
+            dohumanwhitemove();
+        }
+        whoistomove = !whoistomove;
+        printboard();
+    }
+
+    std::cout << "game is done xdddd" << std::endl;
+}
+
 //*************************************************************************
 
 int main(){
     Checkers Checkers;
     Checkers.resetboard();
     Checkers.printboard();
-    Checkers.dohumanwhitemove();
-    Checkers.printboard();
-    Checkers.dohumanblackmove();
-    Checkers.printboard();
+    Checkers.playthegame();
 } //main
