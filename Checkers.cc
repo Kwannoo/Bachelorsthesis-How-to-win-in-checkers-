@@ -181,6 +181,12 @@ void Checkers::dohumanwhitemove(){
     int i2, j2;
     std::cout << "White to move: " << std::endl;
     do{
+        if (FirstTakeWhite(i,j,i2,j2)){
+            if (validmovewhite(i, j, i2, j2)){ //if statement not needed but test
+                valid = true;
+                board[i][j] = 'o';
+            }
+        }
         std::cout << "Which piece would you like to move?" << std::endl;
         std::cout << "Fill in horizontal coordinate (0-7): ";
         std::cin >> j;
@@ -526,6 +532,31 @@ void Checkers::TakeExtraKing(int i, int j){
 
 }
 
+bool Checkers::FirstTakeWhite(int &takei, int &takej, int &takei2, int &takej2){
+    //multiple options to take?
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (board[i][j] == 'w' || board[i][j] == 'W'){
+                if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
+                    takei = i;
+                    takej = j;
+                    takei2 = i-1;
+                    takej2 = j-1; 
+                    return true;
+                }
+                else if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
+                    takei = i;
+                    takej = j;
+                    takei2 = i-1;
+                    takej2 = j-1; 
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void Checkers::TestBoard(){
         // char board[8][8] = {{'o', 'b', 'o', 'b', 'o', 'b', 'o', 'b'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'o', 'o', 'o'},
         //  {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
@@ -534,10 +565,21 @@ void Checkers::TestBoard(){
 }
 
 std::vector<std::vector<int>> Checkers::PossibleMovesWhite(){
+    std::vector<std::vector<int>> possiblemoves;
+    std::vector<int> move;
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'w' || board[i][j] == 'W'){
-                //if (board)
+                if (board[i-1][j-1] == 'o'){
+                    move = {i,j,i-1,j-1};
+                    possiblemoves.push_back(move);
+                }
+                if (board[i-1][j+1] == 'o'){
+                    move = {i,j,i-1,j-1};
+                    possiblemoves.push_back(move);
+                }
+                //etc
+                    
             }
         }
     }
@@ -562,9 +604,7 @@ int Checkers::MinimaxAlgorithm(int depth, int &bestmove){
     return 0;
 }
 
-void Checkers::FirstTakeWhite(){
-    //check if a piece can be taken
-}
+
 //*************************************************************************
 
 int main(){

@@ -32,7 +32,7 @@ class Checkers{
         void TakeExtraKing(int i, int j);
         void TestBoard();
         std::vector<std::vector<int>> PossibleMovesWhite();
-        void FirstTakeWhite();
+        bool FirstTakeWhite(int &takei, int &takej, int &takei2, int &takej2);
         int MinimaxAlgorithm(int depth, int &bestmove);
 
 

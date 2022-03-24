@@ -1,0 +1,4 @@
+- Minimax algoritme: meerdere zetten
+- Random moves: meerdere zetten
+- instantie van meerdere opties pakken eerste ronde?
+- 
