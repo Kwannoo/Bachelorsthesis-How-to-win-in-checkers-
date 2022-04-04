@@ -8,9 +8,7 @@ class Checkers{
     public:
 
         bool whoistomove = true;
-        char board[8][8] = {{'o', 'b', 'o', 'b', 'o', 'b', 'o', 'b'}, {'o', 'o', 'o', 'o', 'b', 'o', 'o', 'o'}, {'o', 'o', 'o', 'w', 'o', 'o', 'o', 'o'},
-         {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'W', 'o', 'W', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-         {'o', 'o', 'o', 'o', 'o', 'w', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}};
+        char board[8][8];
         int blackpieces, whitepieces; //amount pieces each side
 
         Checkers();
@@ -33,6 +31,9 @@ class Checkers{
         void TestBoard();
         std::vector<std::vector<int>> PossibleMovesWhite();
         bool FirstTakeWhite(int &takei, int &takej, int &takei2, int &takej2);
+        bool FirstTakeBlack(int &takei, int &takej, int &takei2, int &takej2);
+        bool FirstTakeKing(int &takei, int &takej, int &takei2, int &takej2);
+        bool HasToTake();
         int MinimaxAlgorithm(int depth, int &bestmove);
 
 
