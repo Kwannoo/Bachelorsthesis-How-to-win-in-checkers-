@@ -7,7 +7,7 @@
 class Checkers{
     public:
 
-        bool whoistomove = true;
+        bool whoistomove = false;
         char board[8][8];
         int blackpieces, whitepieces; //amount pieces each side
 
@@ -30,10 +30,12 @@ class Checkers{
         void TakeExtraKing(int i, int j);
         void TestBoard();
         std::vector<std::vector<int>> PossibleMovesWhite();
-        bool FirstTakeWhite(int &takei, int &takej, int &takei2, int &takej2);
-        bool FirstTakeBlack(int &takei, int &takej, int &takei2, int &takej2);
-        bool FirstTakeKing(int &takei, int &takej, int &takei2, int &takej2);
-        bool HasToTake();
+        std::vector<std::vector<int>> PossibleMovesWhiteTake();
+        bool FirstTakeWhite();
+        bool FirstTakeBlack();
+        bool FirstTakeKing();
+        bool HasToTake(int &i, int &j, int &i2, int &j2);
+        int* CopyBoard();
         int MinimaxAlgorithm(int depth, int &bestmove);
 
 
