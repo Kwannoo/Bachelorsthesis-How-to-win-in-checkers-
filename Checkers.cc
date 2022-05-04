@@ -3,6 +3,7 @@
 #include <ctime>
 #include <array>
 #include <vector>
+#include <cstring>
 #include "Checkers.h"
 
 
@@ -605,13 +606,13 @@ bool Checkers::FirstTakeWhite(){
             if (board[i][j] == 'w'){
                 if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
                     if (j-2 > 0 && i-2 > 0){
-                        std::cout << "first take gevonden white" << std::endl;
+                        std::cout << "first take gevonden white bool" << std::endl;
                         return true;
                     }
                 }
                 else if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
                     if (j+2 > 0 && i-2 > 0){
-                        std::cout << "first take gevonden white" << std::endl;
+                        std::cout << "first take gevonden white bool" << std::endl;
                         return true;
                     }
                 }
@@ -703,23 +704,32 @@ std::vector<std::vector<int>> Checkers::PossibleMovesWhite(){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'w' || board[i][j] == 'W'){
                 if (board[i-1][j-1] == 'o'){
-                    move = {i,j,i-1,j-1};
-                    possiblemoves.push_back(move);
+                    if (i-1 >= 0 && j-1 >= 0){
+                        move = {i,j,i-1,j-1};
+                        possiblemoves.push_back(move);
+                    }
                 }
                 if (board[i-1][j+1] == 'o'){
-                    move = {i,j,i-1,j-1};
-                    possiblemoves.push_back(move);
+                    if (i-1 >= 0 && j+1 < 8){
+                        move = {i,j,i-1,j+1};
+                        possiblemoves.push_back(move);
+                    }
                 }
                 if (board[i][j] == 'W'){
                     if (board[i+1][j-1] == 'o'){
-                        move = {i,j,i+1,j-1};
-                        possiblemoves.push_back(move);
+                        if (i+1 < 8 && j-1 <= 0){
+                            move = {i,j,i+1,j-1};
+                            possiblemoves.push_back(move);
+                        }
                     }
                     if (board[i+1][j+1] == 'o'){
-                        move = {i,j,i+1,j+1};
-                        possiblemoves.push_back(move);
+                        if (i+1 <= 8 && j+1 < 8){
+                            move = {i,j,i+1,j+1};
+                            possiblemoves.push_back(move);
+                        }
                     }
-                }       
+                }  
+                
             }
         }
     }
@@ -739,14 +749,22 @@ int Checkers::MinimaxAlgorithm(int depth, int &bestmove){
 
     if (whoistomove){
         int maxValue = -1000000;
-        memcpy (copyboard, board, 8*8*sizeof(int));
-        //if can take
-        //possiblemovestake
-        //else
-        possiblemoves = PossibleMovesWhite();
+        std::memcpy (copyboard, board, 8*8*sizeof(char));
+        if (FirstTakeWhite() || FirstTakeKing()){
+            possiblemoves = PossibleMovesWhiteTake();
+        }
+        else {
+            possiblemoves = PossibleMovesWhite();
 
+        }
 
         for (size_t i = 0; i < possiblemoves.size(); i++){
+            std::cout << "possiblemoves: ";
+            for (size_t j = 0; j < possiblemoves[i].size(); j++){
+                std::cout << " " << possiblemoves[i][j];
+            }
+            std::cout << std::endl;
+            //std::cout << i << " possiblemoves: " << possiblemoves[i] << std::endl;
             //dowhitemove(i);
             //int eval = minimaxalgorithm(depth-1, dummymove)
 			// if (eval > maxValue){
@@ -777,24 +795,85 @@ int Checkers::MinimaxAlgorithm(int depth, int &bestmove){
 std::vector<std::vector<int>> Checkers::PossibleMovesWhiteTake(){
     std::vector<std::vector<int>> possiblemoves;
     std::vector<int> move;
+    char tempboard[8][8];
+    std::memcpy (tempboard, board, 8*8*sizeof(char));
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++)
             if (board[i][j] == 'w'){
                 if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
                     if (j-2 > 0 && i-2 > 0){
+                        board[i-1][j-1] = 'o'; //temporary take piece
+                        board[i-2][j-2] = 'w';
+                        move = {i, j, i-1, j-1};
+                        possiblemoves.push_back(move);
+                        PossibleMovesWhiteTakeMore(i-2, j-2, possiblemoves, move);
+
+                        std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
                         std::cout << "first take gevonden possiblemoves white" << std::endl;
-                        return true;
                     }
                 }
-                else if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
+                if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
                     if (j+2 > 0 && i-2 > 0){
-                        std::cout << "first take gevonden white" << std::endl;
-                        return true;
+                        board[i-1][j+1] = 'o'; //temporary take piece
+                        board[i-2][j+2] = 'w';
+                        move = {i, j, i-1, j+1};
+                        possiblemoves.push_back(move);
+                        std::cout << "veranderd xdxdd" << std::endl;
+                        printboard();
+                        PossibleMovesWhiteTakeMore(i-2, j+2, possiblemoves, move);
+
+                        std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
+                        std::cout << "first take gevonden possiblemoves white" << std::endl;
+                        
                     }
                 }
+            }
+            //TODO: add for king
     }
+    return possiblemoves;
 }
 
+
+void Checkers::PossibleMovesWhiteTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move){
+    char tempboard[8][8]; //TODO: not temp board for single move
+    std::vector<int> currentmove;
+    std::memcpy (tempboard, board, 8*8*sizeof(char));
+    std::cout << "go erin " << std::endl;
+    printboard();
+    if (board[i][j] == 'w'){
+        std::cout << "dits true" << std::endl;
+        if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
+            if (j-2 > 0 && i-2 > 0){
+                board[i-1][j-1] = 'o'; //temporary take piece
+                board[i-2][j-2] = 'w';
+                currentmove = move;
+                currentmove.push_back(i);
+                currentmove.push_back(j);
+                currentmove.push_back(i-1);
+                currentmove.push_back(j-1);
+                possiblemoves.push_back(currentmove);
+                PossibleMovesWhiteTakeMore(i-2, j-2, possiblemoves, currentmove);
+                std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
+                std::cout << "take more bs" << std::endl;
+            }
+        }
+        if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
+            if (j-2 > 0 && i-2 > 0){
+                board[i-1][j+1] = 'o'; //temporary take piece
+                board[i-2][j+2] = 'w';
+                currentmove = move;
+                currentmove.push_back(i);
+                currentmove.push_back(j);
+                currentmove.push_back(i+1);
+                currentmove.push_back(j+1);
+                possiblemoves.push_back(currentmove);
+                PossibleMovesWhiteTakeMore(i-2, j-2, possiblemoves, currentmove);
+                std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
+                std::cout << "take more bs xddd" << std::endl;
+            }
+        }
+    }
+}
 bool Checkers::HasToTake(int &i, int &j, int &i2, int &j2){
     char Player, Opponent;
     if (!whoistomove){
@@ -879,6 +958,11 @@ bool Checkers::HasToTake(int &i, int &j, int &i2, int &j2){
 int main(){
 
     Checkers Checkers;
-    Checkers.resetboard();
-    Checkers.playthegame();
+    //Checkers.resetboard();
+    //Checkers.playthegame();
+    Checkers.whoistomove = true;
+    int bestmove;
+    Checkers.printboard();
+    Checkers.MinimaxAlgorithm(5, bestmove);
+    Checkers.printboard();
 } //main

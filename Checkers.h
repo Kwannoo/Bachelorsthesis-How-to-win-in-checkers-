@@ -2,13 +2,16 @@
 #include <cstdlib>
 #include <ctime>
 #include <array>
+#include <vector>
 
 
 class Checkers{
     public:
 
         bool whoistomove = false;
-        char board[8][8];
+        char board[8][8]= {{'o', 'b', 'o', 'b', 'o', 'b', 'o', 'b'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'},
+          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
+          {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'w', 'o', 'o', 'o'}};
         int blackpieces, whitepieces; //amount pieces each side
 
         Checkers();
@@ -31,10 +34,13 @@ class Checkers{
         void TestBoard();
         std::vector<std::vector<int>> PossibleMovesWhite();
         std::vector<std::vector<int>> PossibleMovesWhiteTake();
+        void PossibleMovesWhiteTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move);
+
         bool FirstTakeWhite();
         bool FirstTakeBlack();
         bool FirstTakeKing();
         bool HasToTake(int &i, int &j, int &i2, int &j2);
+
         int* CopyBoard();
         int MinimaxAlgorithm(int depth, int &bestmove);
 
