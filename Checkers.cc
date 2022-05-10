@@ -672,13 +672,13 @@ bool Checkers::FirstTakeBlack(){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'b'){
                 if ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o' ){
-                    if (j+2 > 0 && i-2 > 0){
+                    if (j-2 >= 0 && i+2 < 8){
                         std::cout << "first take gevonden black" << std::endl;
                         return true;
                     }
                 }
                 else if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
-                    if (j+2 > 0 && i+2 > 0){
+                    if (j-2 > 0 && i+2 < 8){
                         std::cout << "first take gevonden black" << std::endl;
                         return true;
                     }
@@ -693,7 +693,11 @@ bool Checkers::FirstTakeBlack(){
 void Checkers::TestBoard(){
         // char board[8][8] = {{'o', 'b', 'o', 'b', 'o', 'b', 'o', 'b'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'o', 'o', 'o'},
         //  {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-        //  {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'w', 'o', 'o', 'o'}};
+        //  {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'w', 'o', 'o', 'o'}}; white takes
+
+        // char board[8][8] = {{'o', 'o', 'o', 'b', 'o', 'o', 'o', 'b'}, {'o', 'o', 'W', 'o', 'w', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
+        //  {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
+        //  {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}};
 
 }
 
@@ -758,12 +762,7 @@ int Checkers::MinimaxAlgorithm(int depth, int &bestmove){
 
         }
 
-        for (size_t i = 0; i < possiblemoves.size(); i++){
-            std::cout << "possiblemoves: ";
-            for (size_t j = 0; j < possiblemoves[i].size(); j++){
-                std::cout << " " << possiblemoves[i][j];
-            }
-            std::cout << std::endl;
+        DoPossibleMove(possiblemoves[0]);
             //std::cout << i << " possiblemoves: " << possiblemoves[i] << std::endl;
             //dowhitemove(i);
             //int eval = minimaxalgorithm(depth-1, dummymove)
@@ -772,80 +771,126 @@ int Checkers::MinimaxAlgorithm(int depth, int &bestmove){
 			// 	maxValue = eval;
 			// }
             //memcpy(board, copyboard, 8*8*sizeof(int));
-        }
+        
         return maxValue;
     
     }
 
     else{
-        return 0;
+        int minValue = 1000000;
+        std::memcpy (copyboard, board, 8*8*sizeof(char));
+        if (FirstTakeBlack() || FirstTakeKing()){
+            std::cout << "first take is true" << std::endl;
+
+            possiblemoves = PossibleMovesBlackTake();
+        }
+        else {
+            possiblemoves = PossibleMovesBlack();
+
+        }
+
+        DoPossibleMove(possiblemoves[0]);
+            //std::cout << i << " possiblemoves: " << possiblemoves[i] << std::endl;
+            //dowhitemove(i);
+            //int eval = minimaxalgorithm(depth-1, dummymove)
+			// if (eval > maxValue){
+			// 	bestmove = i;
+			// 	maxValue = eval;
+			// }
+            //memcpy(board, copyboard, 8*8*sizeof(int));
+        
+        return minValue;
     }
     return 0;
 }
 
-// int* Checkers::CopyBoard(){
-//     static int copyboard[8][8];
-//     for (int i = 0; i < 8; i++){
-//         for (int j = 0; j < 8; j++)
-//             copyboard[i][j] = board[i][j];
-//     }
-//     return copyboard;
-// }
 
 std::vector<std::vector<int>> Checkers::PossibleMovesWhiteTake(){
     std::vector<std::vector<int>> possiblemoves;
     std::vector<int> move;
-    char tempboard[8][8];
-    std::memcpy (tempboard, board, 8*8*sizeof(char));
+    char Opponent;
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++)
-            if (board[i][j] == 'w'){
+            if (board[i][j] == 'w' || board[i][j] == 'W'){
                 if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
-                    if (j-2 > 0 && i-2 > 0){
+                    if (j-2 >= 0 && i-2 >= 0){
+                        Opponent = board[i-1][j-1];
                         board[i-1][j-1] = 'o'; //temporary take piece
-                        board[i-2][j-2] = 'w';
+                        board[i-2][j-2] = board[i][j];
+                        board[i][j] = 'o';
                         move = {i, j, i-1, j-1};
                         possiblemoves.push_back(move);
                         PossibleMovesWhiteTakeMore(i-2, j-2, possiblemoves, move);
-
-                        std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
-                        std::cout << "first take gevonden possiblemoves white" << std::endl;
+                        board[i][j] = board[i-2][j-2];
+                        board[i-1][j-1]  = Opponent;
+                        board[i-2][j-2] = 'o';
                     }
                 }
+                
                 if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
-                    if (j+2 > 0 && i-2 > 0){
+                    if (j+2 < 8 && i-2 >= 0){
+                        Opponent = board[i-1][j+1];
                         board[i-1][j+1] = 'o'; //temporary take piece
-                        board[i-2][j+2] = 'w';
+                        board[i-2][j+2] = board[i][j];
+                        board[i][j] = 'o';
                         move = {i, j, i-1, j+1};
                         possiblemoves.push_back(move);
-                        std::cout << "veranderd xdxdd" << std::endl;
-                        printboard();
                         PossibleMovesWhiteTakeMore(i-2, j+2, possiblemoves, move);
-
-                        std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
-                        std::cout << "first take gevonden possiblemoves white" << std::endl;
+                        board[i][j] = board[i-2][j+2];
+                        board[i-1][j+1]  = Opponent;
+                        board[i-2][j+2] = 'o';
                         
                     }
                 }
+                if (board[i][j] == 'W'){
+                    if ((board[i+1][j-1] == 'b' || board[i+1][j-1] == 'B') && board[i+2][j-2] == 'o' ){
+                        if (j-2 >= 0 && i+2 < 8){
+                            Opponent = board[i+1][j-1];
+                            board[i+1][j-1] = 'o'; //temporary take piece
+                            board[i+2][j-2] = board[i][j];
+                            board[i][j] = 'o';
+                            move = {i, j, i+1, j-1};
+                            possiblemoves.push_back(move);
+                            PossibleMovesWhiteTakeMore(i+2, j-2, possiblemoves, move);
+                            board[i][j] = board[i+2][j-2];
+                            board[i+1][j-1]  = Opponent;
+                            board[i+2][j-2] = 'o';
+                        }
+                    }
+                    if ((board[i+1][j+1] == 'b' || board[i+1][j+1] == 'B') && board[i+2][j+2] == 'o' ){
+                        if (j+2 < 8 && i+2 < 8){
+                            Opponent = board[i+1][j+1];
+                            board[i+1][j+1] = 'o'; //temporary take piece
+                            board[i+2][j+2] = board[i][j];
+                            board[i][j] = 'o';
+                            move = {i, j, i+1, j+1};
+                            possiblemoves.push_back(move);
+                            PossibleMovesWhiteTakeMore(i+2, j+2, possiblemoves, move);
+                            board[i][j] = board[i+2][j+2];
+                            board[i+1][j+1]  = Opponent;
+                            board[i+2][j+2] = 'o';
+                        }
+                    }
+                }
             }
-            //TODO: add for king
     }
     return possiblemoves;
 }
 
 
 void Checkers::PossibleMovesWhiteTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move){
-    char tempboard[8][8]; //TODO: not temp board for single move
+    char Opponent;
     std::vector<int> currentmove;
-    std::memcpy (tempboard, board, 8*8*sizeof(char));
-    std::cout << "go erin " << std::endl;
-    printboard();
-    if (board[i][j] == 'w'){
-        std::cout << "dits true" << std::endl;
+    if (board[i][j] == 'w' || board[i][j] == 'W'){
+        if (i == 0) //promote
+            board[i][j] = 'W'; 
+        
         if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
-            if (j-2 > 0 && i-2 > 0){
+            if (j-2 >= 0 && i-2 >= 0){
+                Opponent = board[i-1][j-1];
                 board[i-1][j-1] = 'o'; //temporary take piece
-                board[i-2][j-2] = 'w';
+                board[i-2][j-2] = board[i][j];
+                board[i][j] = 'o';
                 currentmove = move;
                 currentmove.push_back(i);
                 currentmove.push_back(j);
@@ -853,26 +898,300 @@ void Checkers::PossibleMovesWhiteTakeMore(int i, int j, std::vector<std::vector<
                 currentmove.push_back(j-1);
                 possiblemoves.push_back(currentmove);
                 PossibleMovesWhiteTakeMore(i-2, j-2, possiblemoves, currentmove);
-                std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
-                std::cout << "take more bs" << std::endl;
+                board[i][j] = board[i-2][j-2];
+                board[i-1][j-1]  = Opponent;
+                board[i-2][j-2] = 'o';
             }
         }
         if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
-            if (j-2 > 0 && i-2 > 0){
+            if (j+2 < 8 && i-2 >= 0){
+                Opponent = board[i-1][j+1];
                 board[i-1][j+1] = 'o'; //temporary take piece
-                board[i-2][j+2] = 'w';
+                board[i-2][j+2] = board[i][j];
+                board[i][j] = 'o';
+                currentmove = move;
+                currentmove.push_back(i);
+                currentmove.push_back(j);
+                currentmove.push_back(i-1);
+                currentmove.push_back(j+1);
+                possiblemoves.push_back(currentmove);
+                PossibleMovesWhiteTakeMore(i-2, j+2, possiblemoves, currentmove);
+                board[i][j] = board[i-2][j+2];
+                board[i-1][j+1]  = Opponent;
+                board[i-2][j+2] = 'o';
+            }
+        }
+        if (board[i][j] == 'W'){
+            if ((board[i+1][j-1] == 'b' || board[i+1][j-1] == 'B') && board[i+2][j-2] == 'o' ){
+                if (j-2 >= 0 && i+2 < 8){
+                    Opponent = board[i+1][j-1];
+                    board[i+1][j-1] = 'o'; //temporary take piece
+                    board[i+2][j-2] = board[i][j];
+                    board[i][j] = 'o';
+                    currentmove = move;
+                    currentmove.push_back(i);
+                    currentmove.push_back(j);
+                    currentmove.push_back(i+1);
+                    currentmove.push_back(j-1);
+                    possiblemoves.push_back(currentmove);
+                    PossibleMovesWhiteTakeMore(i+2, j-2, possiblemoves, move);
+                    board[i][j] = board[i+2][j-2];
+                    board[i+1][j-1]  = Opponent;
+                    board[i+2][j-2] = 'o';
+                }
+            }
+            if ((board[i+1][j+1] == 'b' || board[i+1][j+1] == 'B') && board[i+2][j+2] == 'o' ){
+                if (j+2 < 8 && i+2 < 8){
+                    Opponent = board[i+1][j+1];
+                    board[i+1][j+1] = 'o'; //temporary take piece
+                    board[i+2][j+2] = board[i][j];
+                    board[i][j] = 'o';
+                    currentmove = move;
+                    currentmove.push_back(i);
+                    currentmove.push_back(j);
+                    currentmove.push_back(i+1);
+                    currentmove.push_back(j+1);
+                    possiblemoves.push_back(currentmove);
+                    PossibleMovesWhiteTakeMore(i+2, j+2, possiblemoves, move);
+                    board[i][j] = board[i+2][j+2];
+                    board[i+1][j+1]  = Opponent;
+                    board[i+2][j+2] = 'o';
+                }
+            }
+        }
+    
+    }
+}
+
+std::vector<std::vector<int>> Checkers::PossibleMovesBlack(){
+    std::vector<std::vector<int>> possiblemoves;
+    std::vector<int> move;
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (board[i][j] == 'b' || board[i][j] == 'B'){
+                if (board[i+1][j-1] == 'o'){
+                    if (i+1 < 8 && j-1 >= 0){
+                        move = {i,j,i+1,j-1};
+                        possiblemoves.push_back(move);
+                    }
+                }
+                if (board[i+1][j+1] == 'o'){
+                    if (i+1 < 8 && j+1 < 8){
+                        move = {i,j,i+1,j+1};
+                        possiblemoves.push_back(move);
+                    }
+                }
+                if (board[i][j] == 'B'){
+                    if (board[i-1][j-1] == 'o'){
+                        if (i-1 >= 0 && j-1 >= 0){
+                            move = {i,j,i-1,j-1};
+                            possiblemoves.push_back(move);
+                        }
+                    }
+                    if (board[i+1][j+1] == 'o'){
+                        if (i+1 < 8 && j+1 < 8){
+                            move = {i,j,i+1,j+1};
+                            possiblemoves.push_back(move);
+                        }
+                    }
+                }  
+                
+            }
+        }
+    }
+    return possiblemoves;
+}
+
+std::vector<std::vector<int>> Checkers::PossibleMovesBlackTake(){
+    std::vector<std::vector<int>> possiblemoves;
+    std::vector<int> move;
+    char Opponent;
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++)
+            if (board[i][j] == 'b' || board[i][j] == 'B'){
+                if ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o' ){
+                    if (j-2 >= 0 && i+2 < 8){
+                        Opponent = board[i+1][j-1];
+                        board[i+1][j-1] = 'o'; //temporary take piece
+                        board[i+2][j-2] = board[i][j];
+                        board[i][j] = 'o';
+                        move = {i, j, i+1, j-1};
+                        possiblemoves.push_back(move);
+                        PossibleMovesBlackTakeMore(i+2, j-2, possiblemoves, move);
+                        board[i][j] = board[i+2][j-2];
+                        board[i+1][j-1]  = Opponent;
+                        board[i+2][j-2] = 'o';
+                    }
+                }
+                
+                if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
+                    if (j+2 < 8 && i+2 < 8){
+                        Opponent = board[i+1][j+1];
+                        board[i+1][j+1] = 'o'; //temporary take piece
+                        board[i+2][j+2] = board[i][j];
+                        board[i][j] = 'o';
+                        move = {i, j, i+1, j+1};
+                        possiblemoves.push_back(move);
+                        PossibleMovesBlackTakeMore(i+2, j+2, possiblemoves, move);
+                        board[i][j] = board[i+2][j+2];
+                        board[i+1][j+1]  = Opponent;
+                        board[i+2][j+2] = 'o';
+                        
+                    }
+                }
+                if (board[i][j] == 'B'){
+                    if ((board[i-1][j+1] == 'w' || board[i-1][j+1] == 'W') && board[i-2][j+2] == 'o' ){
+                        if (j+2 < 8 && i-2 >= 0){
+                            Opponent = board[i-1][j+1];
+                            board[i-1][j+1] = 'o'; //temporary take piece
+                            board[i-2][j+2] = board[i][j];
+                            board[i][j] = 'o';
+                            move = {i, j, i-1, j+1};
+                            possiblemoves.push_back(move);
+                            PossibleMovesBlackTakeMore(i-2, j+2, possiblemoves, move);
+                            board[i][j] = board[i+2][j-2];
+                            board[i-1][j+1]  = Opponent;
+                            board[i-2][j+2] = 'o';
+                        }
+                    }
+                    if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
+                        if (j-2 >= 0 && i-2 >= 0){
+                            Opponent = board[i-1][j-1];
+                            board[i-1][j-1] = 'o'; //temporary take piece
+                            board[i-2][j-2] = board[i][j];
+                            board[i][j] = 'o';
+                            move = {i, j, i-1, j-1};
+                            possiblemoves.push_back(move);
+                            PossibleMovesBlackTakeMore(i-2, j-2, possiblemoves, move);
+                            board[i][j] = board[i-2][j-2];
+                            board[i-1][j-1]  = Opponent;
+                            board[i-2][j-2] = 'o';
+                        }
+                    }
+                }
+            }
+    }
+    return possiblemoves;
+}
+
+
+void Checkers::PossibleMovesBlackTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move){
+    char Opponent;
+    std::vector<int> currentmove;
+    printboard();
+    if (board[i][j] == 'b' || board[i][j] == 'B'){
+        std::cout << "true" << std::endl;
+        if (i == 7) //promote
+            board[i][j] = 'B'; 
+        
+        if ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o' ){
+            if (j-2 >= 0 && i+2 < 8){
+                Opponent = board[i+1][j-1];
+                board[i+1][j-1] = 'o'; //temporary take piece
+                board[i+2][j-2] = board[i][j];
+                board[i][j] = 'o';
+                currentmove = move;
+                currentmove.push_back(i);
+                currentmove.push_back(j);
+                currentmove.push_back(i+1);
+                currentmove.push_back(j-1);
+                possiblemoves.push_back(currentmove);
+                PossibleMovesBlackTakeMore(i+2, j-2, possiblemoves, currentmove);
+                board[i][j] = board[i+2][j-2];
+                board[i+1][j-1]  = Opponent;
+                board[i+2][j-2] = 'o';
+            }
+        }
+        if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
+            if (j+2 < 8 && i+2 < 8){
+                Opponent = board[i+1][j+1];
+                board[i+1][j+1] = 'o'; //temporary take piece
+                board[i+2][j+2] = board[i][j];
+                board[i][j] = 'o';
                 currentmove = move;
                 currentmove.push_back(i);
                 currentmove.push_back(j);
                 currentmove.push_back(i+1);
                 currentmove.push_back(j+1);
                 possiblemoves.push_back(currentmove);
-                PossibleMovesWhiteTakeMore(i-2, j-2, possiblemoves, currentmove);
-                std::memcpy(board, tempboard, 8*8*sizeof(char)); //put board back  
-                std::cout << "take more bs xddd" << std::endl;
+                PossibleMovesBlackTakeMore(i+2, j+2, possiblemoves, currentmove);
+                board[i][j] = board[i+2][j+2];
+                board[i+1][j+1]  = Opponent;
+                board[i+2][j+2] = 'o';
             }
         }
+        if (board[i][j] == 'B'){
+            if ((board[i-1][j-1] == 'w' || board[i-1][j-1] == 'W') && board[i-2][j-2] == 'o' ){
+                if (j-2 >= 0 && i-2 >= 0){
+                    Opponent = board[i-1][j-1];
+                    board[i-1][j-1] = 'o'; //temporary take piece
+                    board[i-2][j-2] = board[i][j];
+                    board[i][j] = 'o';
+                    currentmove = move;
+                    currentmove.push_back(i);
+                    currentmove.push_back(j);
+                    currentmove.push_back(i-1);
+                    currentmove.push_back(j-1);
+                    possiblemoves.push_back(currentmove);
+                    PossibleMovesBlackTakeMore(i-2, j-2, possiblemoves, move);
+                    board[i][j] = board[i-2][j-2];
+                    board[i-1][j-1]  = Opponent;
+                    board[i-2][j-2] = 'o';
+                }
+            }
+            if ((board[i-1][j+1] == 'w' || board[i-1][j+1] == 'W') && board[i-2][j+2] == 'o' ){
+                if (j+2 < 8 && i-2 >= 0){
+                    Opponent = board[i-1][j+1];
+                    board[i-1][j+1] = 'o'; //temporary take piece
+                    board[i-2][j+2] = board[i][j];
+                    board[i][j] = 'o';
+                    currentmove = move;
+                    currentmove.push_back(i);
+                    currentmove.push_back(j);
+                    currentmove.push_back(i-1);
+                    currentmove.push_back(j+1);
+                    possiblemoves.push_back(currentmove);
+                    PossibleMovesBlackTakeMore(i-2, j+2, possiblemoves, move);
+                    board[i][j] = board[i-2][j+2];
+                    board[i-1][j+1]  = Opponent;
+                    board[i-2][j+2] = 'o';
+                }
+            }
+        }
+    
     }
+}
+
+void Checkers::DoPossibleMove(std::vector<int>possiblemoves){
+    std::cout << "before" << std::endl;
+    do{
+        if (board[possiblemoves[2]][possiblemoves[3]] == 'o'){
+            board[possiblemoves[2]][possiblemoves[3]] = board[possiblemoves[0]][possiblemoves[1]];
+        }
+        else { //take piece
+            board[possiblemoves[2]][possiblemoves[3]] = 'o';
+            board[possiblemoves[2]][possiblemoves[3]];
+        }
+        board[possiblemoves[0]][possiblemoves[1]] = 'o';
+    } while (!possiblemoves.empty());
+                std::cout << "possiblemoves: ";
+                for (size_t j = 0; j < possiblemoves.size(); j++){
+                    std::cout << " " << possiblemoves[j];
+                }
+                std::cout << std::endl;
+        
+        possiblemoves.erase(possiblemoves.begin());
+        possiblemoves.erase(possiblemoves.begin());
+        possiblemoves.erase(possiblemoves.begin());
+        possiblemoves.erase(possiblemoves.begin());
+    std::cout << "after" << std::endl;
+    std::cout << "possiblemoves: ";
+                for (size_t j = 0; j < possiblemoves.size(); j++){
+                    std::cout << " " << possiblemoves[j];
+                }
+                std::cout << std::endl;
+
+
 }
 bool Checkers::HasToTake(int &i, int &j, int &i2, int &j2){
     char Player, Opponent;
@@ -960,7 +1279,7 @@ int main(){
     Checkers Checkers;
     //Checkers.resetboard();
     //Checkers.playthegame();
-    Checkers.whoistomove = true;
+    Checkers.whoistomove = false;
     int bestmove;
     Checkers.printboard();
     Checkers.MinimaxAlgorithm(5, bestmove);

@@ -9,9 +9,9 @@ class Checkers{
     public:
 
         bool whoistomove = false;
-        char board[8][8]= {{'o', 'b', 'o', 'b', 'o', 'b', 'o', 'b'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'},
-          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-          {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'w', 'o', 'o', 'o'}};
+        char board[8][8] = {{'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'B', 'o', 'o', 'o', 'o'}, {'o', 'o', 'W', 'o', 'w', 'o', 'W', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
+          {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'w', 'o'},
+          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'} };
         int blackpieces, whitepieces; //amount pieces each side
 
         Checkers();
@@ -35,10 +35,14 @@ class Checkers{
         std::vector<std::vector<int>> PossibleMovesWhite();
         std::vector<std::vector<int>> PossibleMovesWhiteTake();
         void PossibleMovesWhiteTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move);
+        std::vector<std::vector<int>> PossibleMovesBlack();
+        std::vector<std::vector<int>> PossibleMovesBlackTake();
+        void PossibleMovesBlackTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move);
 
         bool FirstTakeWhite();
         bool FirstTakeBlack();
         bool FirstTakeKing();
+        void DoPossibleMove(std::vector<int> possiblemoves);
         bool HasToTake(int &i, int &j, int &i2, int &j2);
 
         int* CopyBoard();
