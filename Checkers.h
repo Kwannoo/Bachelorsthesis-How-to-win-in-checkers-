@@ -43,11 +43,12 @@ class Checkers{
         bool FirstTakeBlack();
         bool FirstTakeKing();
         void DoPossibleMove(std::vector<int> possiblemoves);
+        int evaluate();
+        void DoMinimaxMove();
         bool HasToTake(int &i, int &j, int &i2, int &j2);
 
         int* CopyBoard();
         int MinimaxAlgorithm(int depth, int &bestmove);
-
 
     private:
 
