@@ -23,7 +23,6 @@ class Checkers{
         bool validmoveblack(int i, int j, int i2, int j2);
         void dohumanwhitemove();
         void dohumanblackmove();
-        void playthegame();
         void promote();
         bool validmoveblacknormal(int i, int j, int i2, int j2);
         bool validmovewhitenormal(int i, int j, int i2, int j2);
@@ -47,9 +46,20 @@ class Checkers{
         void DoMinimaxMove();
         bool HasToTake(int &i, int &j, int &i2, int &j2);
 
-        int* CopyBoard();
         int MinimaxAlgorithm(int depth, int &bestmove);
+        void DoRandomMove();
+        void DoMCTSMove();
+        int playthegame(int maxgamelength, int depth, bool print,
+                        int &nrmoves, int gametypeW, int gametypeB);
 
     private:
 
 };
+
+class Node {
+    public:
+      Node(Node* creator)
+      Node();
+      
+
+}
