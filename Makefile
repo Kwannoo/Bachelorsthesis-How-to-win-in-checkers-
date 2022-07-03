@@ -1,11 +1,19 @@
-CC = g++
 
-CompileParms = -Wall -Werror -pedantic -std=c++11 -g -c
+INC_DIR = ./include
+SRC_DIR = ../Checkers
+SOURCES = $(shell find $(SRC_DIR)/ -name 'main.cc')
+OBJECTS = $(SOURCES:.c=.o)
+TARGET  = Checkers
+CC 		= g++
 
-OBJS = Checkers.o
 
-checkers: $(OBJS)
-	$(CC) $(OBJS) -o Checkers
-
+.PHONY: all clean
+all:$(TARGET)
 clean:
-	rm -f Checkers Checkers.o
+	rm -f $(TARGET)
+rebuild: clean all
+
+$(TARGET): $(OBJECTS)
+	$(CC)  -o $@ $^
+%.o: %.c
+	$(CC) -o $@ -c $<

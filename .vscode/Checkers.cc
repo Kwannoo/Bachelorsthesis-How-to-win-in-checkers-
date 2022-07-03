@@ -8,80 +8,6 @@
 #include <climits>
 
 
-class Player { 
-    protected:
-        Checkers* game;
-    public:
-        virtual void doMove(){};
-        virtual ~Player(){};
-};
-
-class Checkers{
-    public:
-
-        bool whoistomove = false;
-        char board[8][8] = {{'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'B', 'o', 'o', 'o', 'o'}, {'o', 'o', 'W', 'o', 'w', 'o', 'W', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-          {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'w', 'o'},
-          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'} };
-        int blackpieces, whitepieces; //amount pieces each side
-
-        Checkers();
-        ~Checkers();
-        void resetboard();
-        void printboard();
-        bool checkpiece(int i, int j);
-        bool validmovewhite(int i, int j, int i2, int j2);
-        bool validmoveblack(int i, int j, int i2, int j2);
-        void dohumanwhitemove();
-        void dohumanblackmove();
-        void promote();
-        bool validmoveblacknormal(int i, int j, int i2, int j2);
-        bool validmovewhitenormal(int i, int j, int i2, int j2);
-        bool validmoveking(int i, int j, int i2, int j2);
-        void TakeExtraWhite(int i, int j);
-        void TakeExtraBlack(int i, int j);
-        void TakeExtraKing(int i, int j);
-        void TestBoard();
-        std::vector<std::vector<int>> PossibleMovesWhite();
-        std::vector<std::vector<int>> PossibleMovesWhiteTake();
-        void PossibleMovesWhiteTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move);
-        std::vector<std::vector<int>> PossibleMovesBlack();
-        std::vector<std::vector<int>> PossibleMovesBlackTake();
-        void PossibleMovesBlackTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move);
-
-        bool FirstTakeWhite();
-        bool FirstTakeBlack();
-        bool FirstTakeKing();
-        void DoPossibleMove(std::vector<int> possiblemoves);
-        int playthegame(int maxgamelength, int depth, bool print,
-                        int &nrmoves, int gametypeW, int gametypeB);
-        std::vector<std::vector<int>> availableMoves();
-
-
-        int evaluate();
-        void DoMinimaxMove();
-        bool HasToTake(int &i, int &j, int &i2, int &j2);
-
-        int MinimaxAlgorithm(int depth, int &bestmove);
-        void DoRandomMove();
-        void DoMCTSMove();
-        void select();
-        void expand();
-        int simulate(double &ratio);
-        void cleanTree();
-        
-        
-
-        
-    private:
-        Node* root;
-        Node* currentState;
-        int gNumberOfNodes;
-        Checkers* copyBoard;
-
-};
-
-
 
 //*************************************************************************
 
@@ -94,11 +20,6 @@ Checkers::Checkers(){
 Checkers::~Checkers(){
 
 }
-
-//*************************************************************************
-
-
-
 
 //*************************************************************************
 
@@ -144,16 +65,19 @@ void Checkers::printboard(){
 
 //*************************************************************************
 
+
+
+
 bool Checkers::validmovewhite(int i, int j, int i2, int j2){
      std::cout << "i: " << i << " j: " << j << std::endl;
      std::cout << "i2: " << i2 << " j2: " << j2 << std::endl;
 
 
-    if (i < 0 && i > 7 && j < 0 && j > 7){
+    if (i < 0 && i > 8 && j < 0 && j > 8){
         return false;
     } //out of bounds
 
-    if (i2 < 0 && i2 > 7 && j2 < 0 && j2 > 7){
+    if (i2 < 0 && i2 > 8 && j2 < 0 && j2 > 8){
         return false;
     } //out of bounds
 
@@ -170,7 +94,6 @@ bool Checkers::validmovewhite(int i, int j, int i2, int j2){
 
 }
 
-//*************************************************************************
 
 //startpos i en j || endpos i en j
 bool Checkers::validmovewhitenormal(int i, int j, int i2, int j2){
@@ -217,12 +140,15 @@ bool Checkers::validmovewhitenormal(int i, int j, int i2, int j2){
 
 //startpos i en j || endpos i en j
 bool Checkers::validmoveblack(int i, int j, int i2, int j2){
+     std::cout << "i: " << i << " j: " << j << std::endl;
+     std::cout << "i2: " << i2 << " j2: " << j2 << std::endl;
 
-    if (i < 0 && i > 7 && j < 0 && j > 7){
+
+    if (i < 0 && i > 8 && j < 0 && j > 8){
         return false;
     } //out of bounds
 
-    if (i2 < 0 && i2 > 7 && j2 < 0 && j2 > 7){
+    if (i2 < 0 && i2 > 8 && j2 < 0 && j2 > 8){
         return false;
     } //out of bounds
 
@@ -257,8 +183,15 @@ void Checkers::dohumanwhitemove(){
             } while(!takemove);
             if (validmovewhite(i, j, i2, j2)){ //if statement not needed but test
                 valid = true;
+                //board[i][j] = 'o';
             }
         }
+        // else if (FirstTakeKing(i,j,i2,j2)){
+        //     if (validmovewhite(i, j, i2, j2)){
+        //         valid = true;
+        //        // board[i][j] = 'o';
+        //     }
+        // }
         else{
             std::cout << "Which piece would you like to move?" << std::endl;
             std::cout << "Fill in horizontal coordinate (0-7): ";
@@ -273,6 +206,7 @@ void Checkers::dohumanwhitemove(){
             std::cin >> i2;
             if (validmovewhite(i, j, i2, j2)){
                 valid = true;
+               // board[i][j] = 'o';
             }
             
             else
@@ -308,8 +242,15 @@ void Checkers::dohumanblackmove(){
             } while(!takemove);
             if (validmoveblack(i, j, i2, j2)){ //if statement not needed but test
                 valid = true;
+                //board[i][j] = 'o';
             }
         }
+        // else if (FirstTakeKing(i,j,i2,j2)){
+        //     if (validmoveblack(i, j, i2, j2)){
+        //         valid = true;
+        //         //board[i][j] = 'o';
+        //     }
+        // }
         else{
             std::cout << "Which piece would you like to move?" << std::endl;
             std::cout << "Fill in horizontal coordinate (0-7): ";
@@ -324,6 +265,7 @@ void Checkers::dohumanblackmove(){
             std::cin >> i2;
             if (validmoveblack(i, j, i2, j2)){
                 valid = true;
+                //board[i][j] = 'o';
             }
             else{
                 std::cout << "Invalid move please enter correctly\n" << std::endl;
@@ -333,7 +275,22 @@ void Checkers::dohumanblackmove(){
     
 }
 
-//*************************************************************************
+// void Checkers::playthegame(){
+//     while (blackpieces != 0 || whitepieces != 0){
+//         if (!whoistomove){
+//             dohumanblackmove();
+//         }
+//         else{
+//             dohumanwhitemove();
+//         }
+//         whoistomove = !whoistomove;
+//         promote();
+//         //printboard();
+//     }
+
+//     std::cout << "game is done" << std::endl;
+// }
+
 
 void Checkers::promote(){
     for (int i = 0; i < 8; i++){
@@ -344,8 +301,6 @@ void Checkers::promote(){
             board[7][i] = 'B';
     }
 }
-
-//*************************************************************************
 
 bool Checkers::validmoveblacknormal(int i, int j, int i2, int j2){
     if ((j - 1 == j2 || j + 1 == j2) && i + 1 == i2){
@@ -379,8 +334,6 @@ bool Checkers::validmoveblacknormal(int i, int j, int i2, int j2){
     } 
     return false;
 }
-
-//*************************************************************************
 
 bool Checkers::validmoveking(int i, int j, int i2, int j2){
     char Player, Opponent;
@@ -444,8 +397,6 @@ bool Checkers::validmoveking(int i, int j, int i2, int j2){
 
 }
 
-//*************************************************************************
-
 void Checkers::TakeExtraWhite(int i, int j){
     std::string take = "yes";
     int i2, j2;
@@ -487,8 +438,6 @@ void Checkers::TakeExtraWhite(int i, int j){
     } while (take == "yes" && take != "no");
 
 }
-
-//*************************************************************************
 
 void Checkers::TakeExtraBlack(int i, int j){
     std::string take = "yes";
@@ -534,8 +483,6 @@ void Checkers::TakeExtraBlack(int i, int j){
     } while (take == "yes" || take != "no");
 
 }
-
-//*************************************************************************
 
 void Checkers::TakeExtraKing(int i, int j){
     char Player, Opponent;
@@ -601,28 +548,28 @@ void Checkers::TakeExtraKing(int i, int j){
 
 }
 
-//*************************************************************************
-
 bool Checkers::FirstTakeWhite(){
     //multiple options to take?
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'w'){
                 if ((board[i-1][j-1] == 'b' || board[i-1][j-1] == 'B') && board[i-2][j-2] == 'o' ){
-                    if (j-2 >= 0 && i-2 >= 0)
+                    if (j-2 >= 0 && i-2 >= 0){
+                        // std::cout << "first take gevonden white bool" << std::endl;
                         return true;
+                    }
                 }
                 else if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
-                    if (j+2 < 8 && i-2 >= 0)
+                    if (j+2 < 8 && i-2 >= 0){
+                        // std::cout << "first take gevonden white bool" << std::endl;
                         return true;
+                    }
                 }
             }
         }
     }
     return false;
 }
-
-//*************************************************************************
 
 bool Checkers::FirstTakeKing(){
     char Player, Opponent;
@@ -639,20 +586,28 @@ bool Checkers::FirstTakeKing(){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == Player){
                 if ((board[i-1][j-1] == Opponent || board[i-1][j-1] == Opponent+32) && board[i-2][j-2] == 'o' ){
-                    if (j-2 >= 0 && i-2 >= 0)
+                    if (j-2 >= 0 && i-2 >= 0){
+                        // std::cout << "first take gevonden king" << std::endl;
                         return true;
+                    }
                 }
                 else if ((board[i-1][j+1] == Opponent || board[i-1][j+1] == Opponent+32) && board[i-2][j+2] == 'o' ){
-                    if (j+2 < 8 && i-2 >= 0)
+                    if (j+2 < 8 && i-2 >= 0){
+                        // std::cout << "first take gevonden king" << std::endl;
                         return true;
+                    }
                 }
                 else if ((board[i+1][j-1] == Opponent || board[i+1][j-1] == Opponent+32) && board[i+2][j-2] == 'o' ){
-                    if (j-2 >= 0 && i+2 > 0)
+                    if (j-2 >= 0 && i+2 > 0){
+                        // std::cout << "first take gevonden king" << std::endl;
                         return true;
+                    }
                 }
                 else if ((board[i+1][j+1] == Opponent || board[i+1][j+1] == Opponent+32) && board[i+2][j+2] == 'o' ){
-                    if (j+2 < 8 && i+2 < 8)
+                    if (j+2 < 8 && i+2 < 8){
+                        // std::cout << "first take gevonden king" << std::endl;
                         return true;
+                    }
                 }
             }
         }
@@ -666,14 +621,16 @@ bool Checkers::FirstTakeBlack(){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'b'){
                 if ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o' ){
-                    if (j-2 >= 0 && i+2 < 8)
+                    if (j-2 >= 0 && i+2 < 8){
+                        // std::cout << "first take gevonden black 1" << std::endl;
                         return true;
-                    
+                    }
                 }
                 else if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
-                    if (j+2 < 8 && i+2 < 8)
+                    if (j+2 < 8 && i+2 < 8){
+                        // std::cout << "first take gevonden black 2" << std::endl;
                         return true;
-                    
+                    }
                 }
             }
         }
@@ -732,7 +689,88 @@ std::vector<std::vector<int>> Checkers::PossibleMovesWhite(){
     return possiblemoves;
 }
 
+int Checkers::MinimaxAlgorithm(int depth, int &bestmove){
+    std::vector<std::vector<int>> possiblemoves;
+    int copyboard[8][8];
+    int dummymove;
+    bool currentwhoistomove = whoistomove;
+    // std::cout << "do minimax" << std::endl;
 
+
+    if (whoistomove){
+        if (FirstTakeWhite() || FirstTakeKing()){
+            possiblemoves = PossibleMovesWhiteTake();
+        }
+        else {
+            possiblemoves = PossibleMovesWhite();
+
+        }
+    }
+    else{
+        if (FirstTakeBlack() || FirstTakeKing()){
+            // std::cout << "first take is true" << std::endl;
+
+            possiblemoves = PossibleMovesBlackTake();
+        }
+        else {
+            possiblemoves = PossibleMovesBlack();
+
+        }
+    }
+    
+    if (possiblemoves.size() == 0 && whoistomove){ //white loses
+        return -1000;
+    }
+
+    if (possiblemoves.size() == 0 && !whoistomove){ //white loses
+        return 1000;
+    }
+
+    if (depth == 0){
+        return evaluate();
+    }
+
+        // for (size_t i = 0; i < possiblemoves.size(); i++){
+        //     std::cout << "possiblemoves: ";
+        //         for (size_t j = 0; j < possiblemoves[i].size(); j++){
+        //             std::cout << " " << possiblemoves[i][j];
+        //         }
+        //     std::cout << std::endl;
+        // }
+
+    std::memcpy (copyboard, board, 8*8*sizeof(char));
+    if (whoistomove){
+        int maxValue = -1000000;
+
+        for (size_t i = 0; i < possiblemoves.size(); i++){
+            DoPossibleMove(possiblemoves[i]);
+            int eval = MinimaxAlgorithm(depth-1, dummymove);
+            if (eval > maxValue){
+                bestmove = i;
+                maxValue = eval;
+            }
+            whoistomove = currentwhoistomove;
+            memcpy(board, copyboard, 8*8*sizeof(char));
+        }      
+        return maxValue; 
+    }
+
+    else{
+        int minValue = 1000000;
+        for (size_t i = 0; i < possiblemoves.size(); i++){
+            DoPossibleMove(possiblemoves[i]);
+            int eval = MinimaxAlgorithm(depth-1, dummymove);
+            if (eval <  minValue){
+                bestmove = i;
+                minValue = eval;
+            }
+            whoistomove = currentwhoistomove;
+            memcpy(board, copyboard, 8*8*sizeof(char));
+        }             
+
+        return minValue;
+    }
+}
 
 
 std::vector<std::vector<int>> Checkers::PossibleMovesWhiteTake(){
@@ -1235,8 +1273,26 @@ int Checkers::evaluate(){
 void Checkers::DoMinimaxMove(){
     std::vector<std::vector<int>> possiblemoves;
     bool currentwhoistomove = whoistomove;
+    if (whoistomove){
+        if (FirstTakeWhite() || FirstTakeKing()){
+            possiblemoves = PossibleMovesWhiteTake();
+        }
+        else {
+            possiblemoves = PossibleMovesWhite();
 
-    possiblemoves = game->availableMoves();
+        }
+    }
+    else{
+        if (FirstTakeBlack() || FirstTakeKing()){
+            std::cout << "first take is true" << std::endl;
+
+            possiblemoves = PossibleMovesBlackTake();
+        }
+        else {
+            possiblemoves = PossibleMovesBlack();
+
+        }
+    }
 
     int bestmove;
     MinimaxAlgorithm(3, bestmove);
@@ -1252,7 +1308,26 @@ void Checkers::DoMinimaxMove(){
 void Checkers::DoRandomMove(){
     std::vector<std::vector<int>> possiblemoves;
     bool currentwhoistomove = whoistomove;
-    possiblemoves = game->availableMoves();
+    if (whoistomove){
+        if (FirstTakeWhite() || FirstTakeKing()){
+            possiblemoves = PossibleMovesWhiteTake();
+        }
+        else {
+            possiblemoves = PossibleMovesWhite();
+
+        }
+    }
+    else{
+        if (FirstTakeBlack() || FirstTakeKing()){
+            // std::cout << "first take is true" << std::endl;
+
+            possiblemoves = PossibleMovesBlackTake();
+        }
+        else {
+            possiblemoves = PossibleMovesBlack();
+
+        }
+    }
    
     size_t random = rand() % possiblemoves.size();
     DoPossibleMove(possiblemoves[random]);
@@ -1649,7 +1724,7 @@ void Checkers::select(){
 	while(!currentState->isLeafNode()){
 		move = currentState->maxChild(true);
 		currentState = currentState->children[move];
-        std::vector<std::vector<int>> possiblemoves = availableMoves();
+        std::vector<std::vector<int>> possiblemoves = availablemoves();
         copyBoard->DoPossibleMove(possiblemoves[move]);
 		//copyBoard->doMove(move, true);
 	}
