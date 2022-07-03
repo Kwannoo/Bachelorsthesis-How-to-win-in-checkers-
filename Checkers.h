@@ -5,6 +5,52 @@
 #include <vector>
 
 
+int gNumberOfNodes;
+
+class Node{
+public:
+	Node(Node* creator);							//constructor for children nodes
+	Node();			//constructor for the root node
+	~Node();													//destructor
+
+	void cleanTree();
+
+	bool isLeafNode();
+	void backPropagate(int wins1, int losses1, int ties1);//function to propagate upwards in tree
+	// void expand(int amountOfMoves, int noOfChildren);			//function to expand downwards in tree
+
+	int getWins()	{return wins;}
+	int getLosses()	{return losses;}
+	int getTies()	{return ties;}
+	int getVisits() {return wins+losses+ties;}
+
+	int 		maxChild(bool justSelection = true);
+
+	void 		printAllChild();
+	double 	calcUCB1Value();
+	bool 		isConsistent();
+	void 		printTree(bool first = true);
+	void 		printRoot(bool first = true);
+
+
+
+
+	// static const int maxSize = 8;																//maximum dimentions of the board (in boxes)
+	// static const int maxNoOfMoves = (2 * (maxSize+1) * maxSize);	//maximum number of doable moves in the beginning of the maxSize board is 2 * 9 * 8
+	int rows, columns, maxNoOfMoves;																//all this information might be redundant
+	int wins, losses, ties;
+	bool isRoot;
+	int nodeNumber;
+
+	Node* parent;
+	std::vector<Node*> children;
+
+private:
+	void updateValue();		//update the value of this tree according to children
+};
+
+
+
 class Checkers{
     public:
 
@@ -49,17 +95,21 @@ class Checkers{
         int MinimaxAlgorithm(int depth, int &bestmove);
         void DoRandomMove();
         void DoMCTSMove();
+        void select();
+        void expand();
+        int simulate(double &ratio);
+        void cleanTree();
+        std::vector<std::vector<int>> availablemoves();
         int playthegame(int maxgamelength, int depth, bool print,
                         int &nrmoves, int gametypeW, int gametypeB);
 
+        
     private:
+        Node* root;
+        Node* currentState;
+        int gNumberOfNodes;
+        Checkers* copyBoard;
 
 };
 
-class Node {
-    public:
-      Node(Node* creator)
-      Node();
-      
 
-}
