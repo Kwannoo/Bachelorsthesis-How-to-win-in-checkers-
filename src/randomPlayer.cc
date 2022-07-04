@@ -3,7 +3,7 @@ class randomPlayer : public Player{
     public:
         randomPlayer(Checkers* Checkers);	//constructor;
         ~randomPlayer();	//constructor;
-        void doRandomMove();
+        void doMove();
     private:
 
 };
@@ -16,6 +16,6 @@ randomPlayer::~randomPlayer(){
 
 }
 
-void randomPlayer::doRandomMove(){
+void randomPlayer::doMove(){
     game->doRandomMove();
 }

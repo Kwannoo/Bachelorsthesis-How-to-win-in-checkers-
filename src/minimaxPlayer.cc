@@ -1,12 +1,11 @@
-
+#include <vector>
 
 class minimaxPlayer : public Player{
     public: 
         minimaxPlayer(Checkers* Checkers);
-        ~minimaxPlayer();
         int evaluate();
         int minimaxAlgorithm(int depth, int &bestmove);
-        void doMinimaxMove();
+        void doMove();
 
     private:
 
@@ -56,7 +55,7 @@ int minimaxPlayer::minimaxAlgorithm(int depth, int &bestmove){
         int maxValue = -1000000;
 
         for (size_t i = 0; i < possiblemoves.size(); i++){
-            game->DoPossibleMove(possiblemoves[i]);
+            game->doPossibleMove(possiblemoves[i]);
             int eval = minimaxAlgorithm(depth-1, dummymove);
             if (eval > maxValue){
                 bestmove = i;
@@ -71,7 +70,7 @@ int minimaxPlayer::minimaxAlgorithm(int depth, int &bestmove){
     else{
         int minValue = 1000000;
         for (size_t i = 0; i < possiblemoves.size(); i++){
-            game->DoPossibleMove(possiblemoves[i]);
+            game->doPossibleMove(possiblemoves[i]);
             int eval = minimaxAlgorithm(depth-1, dummymove);
             if (eval <  minValue){
                 bestmove = i;
@@ -85,18 +84,17 @@ int minimaxPlayer::minimaxAlgorithm(int depth, int &bestmove){
     }
 }
 
-void minimaxPlayer::doMinimaxMove(){
+void minimaxPlayer::doMove(){
     std::vector<std::vector<int>> possiblemoves;
     bool currentwhoistomove = game->whoistomove;
     possiblemoves = game->availableMoves();
 
     int bestmove;
-    minimaxAlgorithm(3, bestmove);
+    minimaxAlgorithm(5, bestmove);
 
-    // std::cout << "best move: " << bestmove << std::endl;
     game->whoistomove = currentwhoistomove;
    
-    DoPossibleMove(possiblemoves[bestmove]);
+    game->doPossibleMove(possiblemoves[bestmove]);
 }
 
 

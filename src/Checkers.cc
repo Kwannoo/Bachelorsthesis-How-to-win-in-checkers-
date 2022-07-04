@@ -1,28 +1,10 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <array>
 #include <vector>
-#include <cstring>
-#include <cmath>
-#include <climits>
-
-
-class Player { 
-    protected:
-        Checkers* game;
-    public:
-        virtual void doMove(){};
-        virtual ~Player(){};
-};
 
 class Checkers{
     public:
 
         bool whoistomove = false;
-        char board[8][8] = {{'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'B', 'o', 'o', 'o', 'o'}, {'o', 'o', 'W', 'o', 'w', 'o', 'W', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-          {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'w', 'o'},
-          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'} };
+        char board[8][8];
         int blackpieces, whitepieces; //amount pieces each side
 
         Checkers();
@@ -48,39 +30,27 @@ class Checkers{
         std::vector<std::vector<int>> PossibleMovesBlack();
         std::vector<std::vector<int>> PossibleMovesBlackTake();
         void PossibleMovesBlackTakeMore(int i, int j, std::vector<std::vector<int>> &possiblemoves, std::vector<int> move);
-
         bool FirstTakeWhite();
         bool FirstTakeBlack();
         bool FirstTakeKing();
-        void DoPossibleMove(std::vector<int> possiblemoves);
+        void doPossibleMove(std::vector<int> possiblemoves);
         int playthegame(int maxgamelength, int depth, bool print,
                         int &nrmoves, int gametypeW, int gametypeB);
         std::vector<std::vector<int>> availableMoves();
-
-
-        int evaluate();
-        void DoMinimaxMove();
         bool HasToTake(int &i, int &j, int &i2, int &j2);
-
-        int MinimaxAlgorithm(int depth, int &bestmove);
-        void DoRandomMove();
-        void DoMCTSMove();
-        void select();
-        void expand();
-        int simulate(double &ratio);
-        void cleanTree();
-        
-        
-
-        
+        void doRandomMove();
+       
     private:
-        Node* root;
-        Node* currentState;
-        int gNumberOfNodes;
-        Checkers* copyBoard;
 
 };
 
+class Player { 
+    protected:
+        Checkers* game;
+    public:
+        virtual void doMove(){};
+        virtual ~Player(){};
+};
 
 
 //*************************************************************************
@@ -103,6 +73,7 @@ Checkers::~Checkers(){
 //*************************************************************************
 
 void Checkers::resetboard(){
+    whoistomove = false;
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if (i < 3){
@@ -238,102 +209,6 @@ bool Checkers::validmoveblack(int i, int j, int i2, int j2){
 
 //*************************************************************************
 
-void Checkers::dohumanwhitemove(){
-    bool valid = false;
-    bool takemove = false;
-    int i,j;
-    int i2, j2;
-    std::cout << "White to move: " << std::endl;
-    do{
-        printboard();
-        if (FirstTakeWhite() || FirstTakeKing()){
-            do{
-                if (HasToTake(i, j, i2, j2))
-                    takemove = true;
-                else{
-                    std::cout << "You have to take a piece!" << std::endl;
-                    printboard();
-                }
-            } while(!takemove);
-            if (validmovewhite(i, j, i2, j2)){ //if statement not needed but test
-                valid = true;
-            }
-        }
-        else{
-            std::cout << "Which piece would you like to move?" << std::endl;
-            std::cout << "Fill in horizontal coordinate (0-7): ";
-            std::cin >> j;
-            std::cout << "Fill in vertical coordinate (0-7): ";
-            std::cin >> i;
-
-            std::cout << "Where do you want your piece to move?" << std::endl;
-            std::cout << "Fill in horizontal coordinate (0-7): ";
-            std::cin >> j2;
-            std::cout << "Fill in vertical coordinate (0-7): ";
-            std::cin >> i2;
-            if (validmovewhite(i, j, i2, j2)){
-                valid = true;
-            }
-            
-            else
-                std::cout << "Invalid move please enter correctly\n" << std::endl;
-        }
-            
-
-    } while(!valid);
-    
-}
-
-
-//*************************************************************************
-
-void Checkers::dohumanblackmove(){
-    bool valid = false;
-    bool takemove = false;
-    int i,j;
-    int i2, j2;
-
-    std::cout << "Black to move: " << std::endl;
-
-    do {
-        printboard();
-        if (FirstTakeBlack() || FirstTakeKing()){
-            do{
-                if (HasToTake(i, j, i2, j2))
-                    takemove = true;
-                else{
-                    std::cout << "You have to take a piece!" << std::endl;
-                    printboard();
-                }
-            } while(!takemove);
-            if (validmoveblack(i, j, i2, j2)){ //if statement not needed but test
-                valid = true;
-            }
-        }
-        else{
-            std::cout << "Which piece would you like to move?" << std::endl;
-            std::cout << "Fill in horizontal coordinate (0-7): ";
-            std::cin >> j;
-            std::cout << "Fill in vertical coordinate (0-7): ";
-            std::cin >> i;
-    
-            std::cout << "Where do you want your piece to move?" << std::endl;
-            std::cout << "Fill in horizontal coordinate (0-7): ";
-            std::cin >> j2;
-            std::cout << "Fill in vertical coordinate (0-7): ";
-            std::cin >> i2;
-            if (validmoveblack(i, j, i2, j2)){
-                valid = true;
-            }
-            else{
-                std::cout << "Invalid move please enter correctly\n" << std::endl;
-            }
-        }
-    } while(!valid);
-    
-}
-
-//*************************************************************************
 
 void Checkers::promote(){
     for (int i = 0; i < 8; i++){
@@ -495,7 +370,6 @@ void Checkers::TakeExtraBlack(int i, int j){
     int i2, j2;
      
     do {
-        // printboard();
         if (((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o') ||
             ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o')){
             std::cout << "Do you want to take another piece? (yes or no): ";
@@ -553,7 +427,7 @@ void Checkers::TakeExtraKing(int i, int j){
     do {
         // printboard();
         if (((board[i+1][j+1] == Opponent || board[i+1][j-1] == Opponent+32) && (board[i+2][j+2] == 'o' || board[i+2][j-2] == 'o'))
-          || (board[i-1][j+1] == Opponent || board[i-1][j-1] == Opponent+32) && (board[i-2][j+2] == 'o' || board[i-2][j-2] == 'o')){
+          || ((board[i-1][j+1] == Opponent || board[i-1][j-1] == Opponent+32) && (board[i-2][j+2] == 'o' || board[i-2][j-2] == 'o'))){
             std::cout << "Do you want to take another piece? (yes or no): ";
             std::cin >> take;
             if (take == "yes"){
@@ -612,7 +486,7 @@ bool Checkers::FirstTakeWhite(){
                     if (j-2 >= 0 && i-2 >= 0)
                         return true;
                 }
-                else if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
+                if ((board[i-1][j+1] == 'b' || board[i-1][j+1] == 'B') && board[i-2][j+2] == 'o' ){
                     if (j+2 < 8 && i-2 >= 0)
                         return true;
                 }
@@ -642,15 +516,15 @@ bool Checkers::FirstTakeKing(){
                     if (j-2 >= 0 && i-2 >= 0)
                         return true;
                 }
-                else if ((board[i-1][j+1] == Opponent || board[i-1][j+1] == Opponent+32) && board[i-2][j+2] == 'o' ){
+                if ((board[i-1][j+1] == Opponent || board[i-1][j+1] == Opponent+32) && board[i-2][j+2] == 'o' ){
                     if (j+2 < 8 && i-2 >= 0)
                         return true;
                 }
-                else if ((board[i+1][j-1] == Opponent || board[i+1][j-1] == Opponent+32) && board[i+2][j-2] == 'o' ){
+                if ((board[i+1][j-1] == Opponent || board[i+1][j-1] == Opponent+32) && board[i+2][j-2] == 'o' ){
                     if (j-2 >= 0 && i+2 > 0)
                         return true;
                 }
-                else if ((board[i+1][j+1] == Opponent || board[i+1][j+1] == Opponent+32) && board[i+2][j+2] == 'o' ){
+                if ((board[i+1][j+1] == Opponent || board[i+1][j+1] == Opponent+32) && board[i+2][j+2] == 'o' ){
                     if (j+2 < 8 && i+2 < 8)
                         return true;
                 }
@@ -665,12 +539,14 @@ bool Checkers::FirstTakeBlack(){
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'b'){
+                std::cout << "first step true" << "i: " << i << "j: " << j <<std::endl;
                 if ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o' ){
                     if (j-2 >= 0 && i+2 < 8)
                         return true;
                     
                 }
-                else if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
+                if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
+                    std::cout << "second set true?\n";
                     if (j+2 < 8 && i+2 < 8)
                         return true;
                     
@@ -683,9 +559,9 @@ bool Checkers::FirstTakeBlack(){
 
 
 void Checkers::TestBoard(){
-        // char board[8][8] = {{'o', 'b', 'o', 'b', 'o', 'b', 'o', 'b'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'o', 'o', 'o'},
-        //  {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'b', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-        //  {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'o', 'o', 'w', 'o', 'o', 'o'}}; white takes
+        char board[8][8] = {{'o', 'b', 'o', 'W', 'o', 'W', 'o', 'o'}, {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
+         {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'o', 'o'},
+         {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'o', 'o', 'w', 'o'}}; //white takes
 
         // char board[8][8] = {{'o', 'o', 'o', 'b', 'o', 'o', 'o', 'b'}, {'o', 'o', 'W', 'o', 'w', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
         //  {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
@@ -1095,7 +971,7 @@ void Checkers::PossibleMovesBlackTakeMore(int i, int j, std::vector<std::vector<
 
 //*************************************************************************
 
-void Checkers::DoPossibleMove(std::vector<int>possiblemoves){
+void Checkers::doPossibleMove(std::vector<int>possiblemoves){
 
     do{
         // std::cout << "possiblemove bs" << std::endl;
@@ -1128,16 +1004,19 @@ void Checkers::DoPossibleMove(std::vector<int>possiblemoves){
             // std::cout << "nothing" << std::endl;
         }
         board[possiblemoves[0]][possiblemoves[1]] = 'o';
+        promote();
         possiblemoves.erase(possiblemoves.begin(), possiblemoves.begin()+4);
     } while (!possiblemoves.empty());
 
     whoistomove = !whoistomove;
+    
 }
 
 
 
 bool Checkers::HasToTake(int &i, int &j, int &i2, int &j2){
-    char Player, Opponent;
+    char Player;
+    char Opponent;
     if (!whoistomove){
         Player = 'B';
         Opponent = 'W';
@@ -1215,447 +1094,8 @@ bool Checkers::HasToTake(int &i, int &j, int &i2, int &j2){
     return false;
 }
 
-//*************************************************************************
 
-int Checkers::evaluate(){
-    int score = 0;
-    for (int i = 0; i < 8; i++){
-        for (int j = 0; j < 8; j++){
-            if (board[i][j] == 'w' || board[i][j] == 'W'){
-                score += 5;
-            }
-            if (board[i][j] == 'b' || board[i][j] == 'B'){
-                score -= 5;
-            }
-        }
-    }
-    return score;
-}
-
-void Checkers::DoMinimaxMove(){
-    std::vector<std::vector<int>> possiblemoves;
-    bool currentwhoistomove = whoistomove;
-
-    possiblemoves = game->availableMoves();
-
-    int bestmove;
-    MinimaxAlgorithm(3, bestmove);
-
-    std::cout << "best move: " << bestmove << std::endl;
-    whoistomove = currentwhoistomove;
-   
-
-    DoPossibleMove(possiblemoves[bestmove]);
-    // printboard();
-}
-
-void Checkers::DoRandomMove(){
-    std::vector<std::vector<int>> possiblemoves;
-    bool currentwhoistomove = whoistomove;
-    possiblemoves = game->availableMoves();
-   
-    size_t random = rand() % possiblemoves.size();
-    DoPossibleMove(possiblemoves[random]);
-}
-
-//*******************************************************************
-//START MCTS
-
-Node::Node(){
-	wins = losses = ties = 0;
-	isRoot = true;
-	parent = NULL;
-	nodeNumber = 0;
-	gNumberOfNodes = 1;
-}
-
-Node::Node(Node* creator){
-	isRoot = false;
-	parent = creator;
-	wins = losses = ties = 0;
-	nodeNumber = gNumberOfNodes;
-	gNumberOfNodes++;
-}
-
-Node::~Node(){
-	for(Node* node : children){
-		delete node;
-	}
-}
-
-
-void Node::cleanTree(){
-	for(Node* node : children){
-		std::cout << "hier 4" << std::endl;
-		delete node;
-		node = NULL;
-		// std::cout << "hier 5" << std::endl;
-	}
-    std::cout << "after for loop" << std::endl;
-	children.clear();
-	wins = losses = ties = 0;
-	gNumberOfNodes = 1;
-}
-
-bool Node::isLeafNode(){
-	return !(bool)(children.size());
-}
-
-int Node::maxChild(bool justSelection){
-	double maxValue = INT_MIN;
-	double currentValue = INT_MIN;
-	int move = 0;
-	int bestMove = INT_MIN;
-	int visits = 0;
-	// if(this->isRoot){
-		// std::cout << "begin maxchild" << std::endl;
-		// std::cout << "#children = " << children.size() << std::endl;
-		// printTree();
-	// }
-	for(Node* node : children){
-        if (justSelection)
-            currentValue = node->calcUCB1Value();
-            std::cout << "currentValue: " << currentValue << std::endl;
-		// if(gMove == 0 || justSelection){//UCB1
-		// 	currentValue = node->calcUCB1Value();
-		// }
-		// else if(gMove == 1){//MAX CHILD
-		// 	visits = node->getVisits();
-		// 	if (visits == 0){
-		// 		visits = 1; //make sure we don't divide by 0
-		// 	}
-		// 	currentValue = double((double)(node->getWins())/(double)(visits));
-		// }
-		// else if(gMove == 2){//ROBUST CHILD
-		// 	currentValue = node->getVisits();
-		// }
-		if(currentValue > maxValue){
-			bestMove = move;
-			maxValue = currentValue;
-		}
-		++move;
-	}
-	// std::cout << std::endl;
-	return bestMove;
-}
-
-void Node::printAllChild(){
-	double currentValue = INT_MIN;
-	int i = 0;
-	int visits = 0;
-    int gMove = 0;
-	for(Node* node : children){
-		if(gMove == 0){//UCB1
-			currentValue = node->calcUCB1Value();
-		}
-		else if(gMove == 1){//MAX CHILD
-			visits = node->getVisits();
-			if (visits == 0){
-				visits = 1; //make sure we don't divide by 0
-			}
-			currentValue = (double)(node->getWins())/(double)(visits);
-		}
-		else if(gMove == 2){//ROBUST CHILD
-			currentValue = node->getVisits();
-		}
-		std::cout << "currentValue for child " << i++ << " : " << currentValue <<std::endl;
-	}
-}
-
-double Node::calcUCB1Value(){
-	double C = 0.4; //constant value
-	int Wi = wins;
-	double ni = (double)getVisits();
-	int Ni = 0;
-	double UCB1 = 0;
-	if(parent != NULL) //which it should never be...
-		Ni = parent->getVisits();
-
-  //for calculation purposes and avoiding dividing by 0
-  if(ni == 0){
-		ni = 0.5;
-	}
-
-    std::cout << "Wi" << Wi << std::endl;
-    std::cout << "ni" << ni << std::endl;
-
-    std::cout << "Ni" << Ni << std::endl;
-
-
-	UCB1 = (Wi/ni) + (C * sqrt( (log(Ni) / ni) ));
-
-	return UCB1;
-}
-
-
-
-void Node::updateValue(){
-	int oldWins 	= wins;
-	int oldLosses 	= losses;
-	int oldTies 	= ties;
-
-	wins = losses = ties = 0;
-
-	for(Node* node : children){
-		if(node != NULL){
-			wins 	+= node->getWins();
-			losses 	+= node->getLosses();
-			ties 	+= node->getTies();
-		}
-	}
-
-	if(parent != NULL){
-		parent->backPropagate((wins - oldWins), (losses - oldLosses), (ties - oldTies)); //Give the difference in score back to parent
-	}
-}
-
-void Node::backPropagate(int wins1, int losses1, int ties1){
-	wins 	+= wins1;
-	losses 	+= losses1;
-	ties 	+= ties1;
-	if(parent != NULL){
-		parent->backPropagate(wins1, losses1, ties1);
-	}
-}
-
-bool Node::isConsistent(){
-	int cWins = 0;
-	int cLosses = 0;
-	int cTies = 0;
-
-	for(Node* node : children){
-        std::cout << "go past children" << std::endl;
-		if(node != NULL){
-            // std::cout << "cWins: " << node->getWins() << std::endl;
-            // std::cout << "cLosses: " << node->getLosses() << std::endl;
-            // std::cout << "cTies: " << node->getTies() << std::endl;
-            // std::cout << "------------------------------------" << std::endl;
-			cWins += node->getWins();
-			cLosses += node->getLosses();
-			cTies += node->getTies();
-		}
-	}
-
-
-    std::cout << "Wins: " << wins << std::endl;
-    std::cout << "Losses: " << losses << std::endl;
-    std::cout << "Ties: " << ties << std::endl;
-
-	//Check if this node is inconsistent with children
-	if(cWins != wins || cLosses != losses || cTies != ties){
-        std::cout << "this goes wrong" << std::endl;
-		return false;
-	}
-
-	//Check if this node is inconsistent with children (might be off by 2 but eh)
-	if(!((cWins == wins || cWins == wins +1)
-   	&&(cLosses == losses || cLosses == losses +1)
-		&&(cTies == ties || cTies == ties + 1))){
-			return false;
-		}
-	if(!(getVisits() == cWins + cLosses + cTies + 1)){
-		std::cout << nodeNumber << " is the problemo" << std::endl;
-		std::cout << "cwins = " << cWins << " closses = " << cLosses << " cTies = " << cTies << std::endl;
-		std::cout << "getvisits() = " << getVisits() << std::endl;
-		std::cout << "getvisits = niet alles children +1" << std::endl;
-		return false;
-	}
-
-	else{ //check if children are consistent
-		for(Node* node : children){
-			if(node != NULL){
-				if(!(node->isConsistent())){
-					return false;
-				}
-			}
-		}
-	 }
-
-	return true;
-
-}
-
-void Node::printTree(bool first){
-	Node* cParent = parent;
-	if(first){
-		std::cout << "start of print tree:" << std::endl;
-		std::cout << "digraph test{" << std::endl;
-	}
-
-	//print line for the node itself
-	// if(getVisits() > 0){ //if it is not empty
-		std::cout << nodeNumber << " [label=\"" << wins << "/" << losses << "/" << ties << "\" color=black, "
-							<< "fontcolor=black, fontsize=12, shape=circle]" << std::endl;
-		//print line for connection with parent:
-		if(parent!= NULL){
-			std::cout << parent->nodeNumber << " -> " << nodeNumber << ";" << std::endl;
-		}
-	// }
-
-
-	// std::cout << "myNumber: " << nodeNumber <<std::endl;
-	//
-	// while(cParent != NULL){
-	// 	std::cout << " child of: " << cParent->nodeNumber;
-	// 	cParent = cParent->parent;
-	// }
-	//
-	// std::cout << std::endl << "wins :" << wins << " losses: " << losses << " ties: " << ties << std::endl;
-	//
-	// std::cout << std::endl;
-
-	for (Node* node : children){
-		node->printTree(false);
-	}
-
-
-	if(first){
-		std::cout << "}" << std::endl;
-		std::cout << "end of print tree:" << std::endl;
-	}
-
-}
-
-void Node::printRoot(bool first){
-	Node* cParent = parent;
-	if(first){
-		std::cout << "start of print tree:" << std::endl;
-		std::cout << "digraph test{" << std::endl;
-	}
-
-	//print line for the node itself
-	if(getVisits() > 0){ //if it is not empty
-		std::cout << nodeNumber << " [label=\"" << wins << "/" << losses << "/" << ties << "\" color=black, "
-							<< "fontcolor=black, fontsize=12, shape=circle]" << std::endl;
-		//print line for connection with parent:
-		if(parent!= NULL){
-			std::cout << parent->nodeNumber << " -> " << nodeNumber << ";" << std::endl;
-		}
-	}
-
-
-	// std::cout << "myNumber: " << nodeNumber <<std::endl;
-	//
-	// while(cParent != NULL){
-	// 	std::cout << " child of: " << cParent->nodeNumber;
-	// 	cParent = cParent->parent;
-	// }
-	//
-	// std::cout << std::endl << "wins :" << wins << " losses: " << losses << " ties: " << ties << std::endl;
-	//
-	// std::cout << std::endl;
-	if(first)
-		for (Node* node : children){
-			node->printRoot(false);
-		}
-
-	if(first){
-		std::cout << "}" << std::endl;
-		std::cout << "end of print tree:" << std::endl;
-	}
-
-}
-
-
-void Checkers::DoMCTSMove(){
-    Checkers firstCopy;
-    Checkers* firstCopy = new Checkers();
-    this->firstCopy;
-    firstCopy = *this;
-    copyBoard = &firstCopy;
-    root = new Node();
-    currentState = root;
-
-    int move = 0;
-    double ratio = INT_MIN; //necessary?
-	int simResult = INT_MIN;
-	int player = 0; //necessary?
-	bool isLeafNode = false;
-	int bestMove = -1;
-
-    int gIterations = 10;
-
-    for(int i = 0; i < gIterations; ++i){
-		// std::cout << "BEGIN NUMBER OF GAMES: " << i << std::endl;
-        firstCopy = *this;
-		copyBoard = &firstCopy;
-		//selection of node to expand or roll out (changes currentRoot and gamecopy accordingly)
-		select();
-		//expand if needed
-		expand();
-		//simulate
-		simResult = simulate(ratio);
-	// 	//update the tree
-        if ((whoistomove && simResult == 2) || (!whoistomove && simResult == 0)){												//win for MCTS player
-			currentState->backPropagate(1, 0, 0);
-			std::cout << "simresult == player!!!!!" << std::endl;
-		}
-		else if((whoistomove && simResult == 0) || (!whoistomove && simResult == 2)){		//loss for MCTS player
-			currentState->backPropagate(0, 1, 0);
-			std::cout << "simresult != player???????" << std::endl;
-		}
-		else if(simResult == 1){													//tie
-			currentState->backPropagate(0, 0, 1);
-            std::cout << "drawwww" << std::endl;
-		}
-        else{
-            std::cout << "something went wrong unlucky" << std::endl;
-        }
-		// root->printTree();
-
-	}
-	// if(gMCTSprint == true){
-	// 	root->printTree();
-	// 	std::cout << "einde beurt-----------------------------------------------" << std::endl;
-	// 	root->printRoot();
-	// 	root->printAllChild();
-	// }
-
-
-    // root->printTree();
-    root->printRoot();
-    root->printAllChild();
-
-	if(!root->isConsistent()){
-		std::cout << "root is not consistent" << std::endl;
-	}
-	// 	//goto: select node
-	// }
-	if(root->children[0] != NULL){
-		bestMove = root->maxChild(true);
-        std::cout << "bestmove" << bestMove << std::endl;
-	}
-
-
-    std::vector<std::vector<int>> possiblemoves = availablemoves();
-    std::cout << "do possible move" << std::endl;
-    DoPossibleMove(possiblemoves[bestMove]);
-	// game->doMove(bestMove,0);
-    //TODO: Add whoistomove;
-    std::cout << "currentstate rooot" << std::endl;
-	currentState = root;
-
-std::cout << "go clean tree" << std::endl;
-	cleanTree();
-
-}
-void Checkers::cleanTree(){
-    root->cleanTree();
-}
-
-void Checkers::select(){
-	currentState = root;
-	int move = -1;
-	while(!currentState->isLeafNode()){
-		move = currentState->maxChild(true);
-		currentState = currentState->children[move];
-        std::vector<std::vector<int>> possiblemoves = availableMoves();
-        copyBoard->DoPossibleMove(possiblemoves[move]);
-		//copyBoard->doMove(move, true);
-	}
-}
-
-std::vector<std::vector<int>> Checkers::availablemoves(){
+std::vector<std::vector<int>> Checkers::availableMoves(){
     std::vector<std::vector<int>> possiblemoves;
     if (whoistomove){
         if (FirstTakeWhite() || FirstTakeKing()){
@@ -1667,9 +1107,9 @@ std::vector<std::vector<int>> Checkers::availablemoves(){
         }
     }
     else{
+        std::cout << "go into available moves\n";
         if (FirstTakeBlack() || FirstTakeKing()){
-            // std::cout << "first take is true" << std::endl;
-
+            std::cout << "firsttakeblack\n"; //TODO
             possiblemoves = PossibleMovesBlackTake();
         }
         else {
@@ -1680,148 +1120,23 @@ std::vector<std::vector<int>> Checkers::availablemoves(){
     return possiblemoves;
 }
 
-void Checkers::expand(){
-    if(currentState->getVisits() == 0){
-		//do nothing, we want rollouts for this state
-		return;
-	}
-	else{
-		//We want to add a child for each possible move, then make currentState the first node and do rollout
-		if(currentState->children.size() != 0){
-			std::cout << "Er gaat iets fout in expand, we expanden terwijl er al kinderen zijn" << std::endl;
-		}
-		Node *node;
-        std::vector<std::vector<int>> possiblemoves = copyBoard->availablemoves();
-		for(size_t i = 0; i < possiblemoves.size(); ++i){ //TODO
-			node = new Node(currentState);
-			currentState->children.push_back(node);
-		}
+void Checkers::doRandomMove(){
+    std::vector<std::vector<int>> possiblemoves;
+    possiblemoves = availableMoves();
 
-		if(currentState->children.size() > 0){//check if there is a child now (if not it's a end state)
-			currentState = currentState->children[0];
-			copyBoard->DoPossibleMove(possiblemoves[0]);
-		}
-	}
-	return;
+    size_t random = rand() % possiblemoves.size();
+    doPossibleMove(possiblemoves[random]);
+    //printboard();
 }
 
-int Checkers::simulate(double &ratio){
-	// std::cout << "we simuleren voor node:" << currentState->nodeNumber << std::endl;
-    int nrmoves;
-	return copyBoard->playthegame(50, 3, false, nrmoves, 0, 0);  //TODO: add random playout
-}
-
-
-
-
-int Checkers::playthegame(int maxgamelength, int depth, bool print,
-                        int &nrmoves, int gametypeW, int gametypeB){
-    
-    
-    
-
-    int movecount = 0;
-    
-    while (movecount < maxgamelength){
-        if (print)
-            printboard();
-
-        std::vector<std::vector<int>> possiblemoves;
-        if (whoistomove){ //white to move
-            if (FirstTakeWhite() || FirstTakeKing()){
-                possiblemoves = PossibleMovesWhiteTake();
-            }
-            else {
-                possiblemoves = PossibleMovesWhite();
-            }
-            //         for (size_t i = 0; i < possiblemoves.size(); i++){
-            // std::cout << "possiblemoves: ";
-            //     for (size_t j = 0; j < possiblemoves[i].size(); j++){
-            //         std::cout << " " << possiblemoves[i][j];
-         //        }
-            // std::cout << std::endl;
-       // }
-            if (possiblemoves.empty())
-                return 0; //black wins
-            else{
-                switch (gametypeW){
-                    case 0: //random move
-                        DoRandomMove();
-                        break;
-                    case 1:
-                        DoMinimaxMove();
-                        break;
-                    case 2:
-                        //DoMinimaxMoveAlphaBeta();
-                        break;
-                    case 3:
-                        //DoMCTSmove();
-                        break;
-                }
-            }
-        }
-        else { //black to move
-            if (FirstTakeBlack() || FirstTakeKing()){
-                possiblemoves = PossibleMovesBlackTake();
-            }
-            else {
-                possiblemoves = PossibleMovesBlack();
-            }
-
-        // for (size_t i = 0; i < possiblemoves.size(); i++){
-        //     std::cout << "possiblemoves: ";
-        //         for (size_t j = 0; j < possiblemoves[i].size(); j++){
-        //             std::cout << " " << possiblemoves[i][j];
-        //         }
-        //     std::cout << std::endl;
-        // }
-            if (possiblemoves.empty())
-                return 2; //white wins
-            else{
-                switch (gametypeB){
-                    case 0: //random move
-                        DoRandomMove();
-                        break;
-                    case 1:
-                        DoMinimaxMove();
-                        break;
-                    case 2:
-                        //DoMinimaxMoveAlphaBeta();
-                        break;
-                    case 3:
-                        DoMCTSMove();
-                        break;
-                }
-            }
-        }
-        movecount++;
-        promote();
-        
-    }
-        nrmoves = movecount;
-        return 1; //draw
-
-}
-
-int main(){
-
-    Checkers Checkers;
-    //Checkers.resetboard();
-    //Checkers.playthegame();
-    Checkers.whoistomove = false;
-    int bestmove;
-    int nrmoves;
-    //Checkers.printboard();
-    Checkers.resetboard();
-    int result = Checkers.playthegame(200, 3, true, nrmoves, 0, 3);
-    std::cout << "result: " << result << std::endl;
-
-//  srand(100);
-//     for (int i = 0; i < 10; i++)
-//         Checkers.DoRandomMove();
-
-    // Checkers.printboard();
-} //main
-
+//   0 1 2 3 4 5 6 7
+// 0 o b o W o W o o
+// 1 w o w o o o o o
+// 2 o o o o o o o o
+// 3 o o o o o o o o
+// 4 o o o o o b o o
+// 5 o o w o w o o o
+// 6 o o o o o o o o
+// 7 o o w o o o w o
 
 //https://github.com/kurebasu/Dots-and-Boxes/blob/master/src/MCTSPlayer.cc

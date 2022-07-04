@@ -1,10 +1,10 @@
 
 INC_DIR = ./include
-SRC_DIR = ../Checkers
+SRC_DIR = ./src
 SOURCES = $(shell find $(SRC_DIR)/ -name 'main.cc')
 OBJECTS = $(SOURCES:.c=.o)
 TARGET  = Checkers
-CC 		= g++
+CC 		= g++ -Wall
 
 
 .PHONY: all clean
