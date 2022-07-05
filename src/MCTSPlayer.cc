@@ -29,12 +29,6 @@ public:
 	void 		printTree(bool first = true);
 	void 		printRoot(bool first = true);
     
-
-
-
-
-	// static const int maxSize = 8;																//maximum dimentions of the board (in boxes)
-	// static const int maxNoOfMoves = (2 * (maxSize+1) * maxSize);	//maximum number of doable moves in the beginning of the maxSize board is 2 * 9 * 8
 	int rows, columns, maxNoOfMoves;																//all this information might be redundant
 	int wins, losses, ties;
 	bool isRoot;
@@ -73,12 +67,9 @@ Node::~Node(){
 
 void Node::cleanTree(){
 	for(Node* node : children){
-		std::cout << "hier 4" << std::endl;
 		delete node;
 		node = NULL;
-		// std::cout << "hier 5" << std::endl;
 	}
-    std::cout << "after for loop" << std::endl;
 	children.clear();
 	wins = losses = ties = 0;
 	gNumberOfNodes = 1;
@@ -94,11 +85,11 @@ int Node::maxChild(bool justSelection){
 	int move = 0;
 	int bestMove = INT_MIN;
 	int visits = 0;
-	if(this->isRoot){
-		std::cout << "begin maxchild" << std::endl;
-		std::cout << "#children = " << children.size() << std::endl;
-		printTree();
-	}
+	// if(this->isRoot){
+	// 	std::cout << "begin maxchild" << std::endl;
+	// 	std::cout << "#children = " << children.size() << std::endl;
+	// 	printTree();
+	// }
 	for(Node* node : children){
         if (justSelection)
             currentValue = node->calcUCB1Value();
@@ -115,14 +106,13 @@ int Node::maxChild(bool justSelection){
 		// else if(gMove == 2){//ROBUST CHILD
 		// 	currentValue = node->getVisits();
 		// }
-		if(currentValue >= maxValue){
+		if(currentValue > maxValue){
 			bestMove = move;
 			maxValue = currentValue;
 		}
-		++move;
+		move++;
 	}
 	// std::cout << std::endl;
-	std::cout << "return bestmove" << std::endl;
 	return bestMove;
 }
 
@@ -207,12 +197,8 @@ bool Node::isConsistent(){
 	int cTies = 0;
 
 	for(Node* node : children){
-        std::cout << "go past children" << std::endl;
 		if(node != NULL){
-            std::cout << "cWins: " << node->getWins() << std::endl;
-            std::cout << "cLosses: " << node->getLosses() << std::endl;
-            std::cout << "cTies: " << node->getTies() << std::endl;
-            std::cout << "------------------------------------" << std::endl;
+
 			cWins += node->getWins();
 			cLosses += node->getLosses();
 			cTies += node->getTies();
@@ -220,13 +206,21 @@ bool Node::isConsistent(){
 	}
 
 
-    std::cout << "Wins: " << wins << std::endl;
-    std::cout << "Losses: " << losses << std::endl;
-    std::cout << "Ties: " << ties << std::endl;
-
 	//Check if this node is inconsistent with children
 	if(cWins != wins || cLosses != losses || cTies != ties){
-        std::cout << "this goes wrong" << std::endl;
+		int total = cWins + cLosses + cTies;
+		int total2 = wins + losses + ties;
+
+		std::cout << "difference: " << total - total2 << std::endl;
+		// std::cout << "cWins: " << cWins << std::endl;
+		// std::cout << "cLosses: " << cLosses << std::endl;
+		// std::cout << "cTies: " << cTies << std::endl;
+		// std::cout << "------------------------------------" << std::endl;
+
+		// std::cout << "Wins: " << wins << std::endl;
+		// std::cout << "Losses: " << losses << std::endl;
+		// std::cout << "Ties: " << ties << std::endl;
+
 		return false;
 	}
 
@@ -428,13 +422,10 @@ void MCTSPlayer::doMove(){
 	int player = 0; //necessary?
 	bool isLeafNode = false;
 	int bestMove = -1;
-
-    int gIterations = 10;
-
-	game->printboard();
+	int gIterations = 1000;
 
     for(int i = 0; i < gIterations; ++i){
-		std::cout << "BEGIN NUMBER OF GAMES: " << i << std::endl;
+		// std::cout << "BEGIN NUMBER OF GAMES: " << i << std::endl;
         gameCopy = *game;
 		//selection of node to expand or roll out (changes currentRoot and gamecopy accordingly)
 		select();
@@ -443,11 +434,11 @@ void MCTSPlayer::doMove(){
 		//simulate
 		simResult = simulate(ratio);
 	// 	//update the tree
-        if ((gameCopy.whoistomove && simResult == 2) || (!gameCopy.whoistomove && simResult == 0)){												//win for MCTS player
+        if ((game->whoistomove && simResult == 2) || (!game->whoistomove && simResult == 0)){												//win for MCTS player
 			currentState->backPropagate(1, 0, 0);
 			// std::cout << "simresult == player!!!!!" << std::endl;
 		}
-		else if((gameCopy.whoistomove && simResult == 0) || (!gameCopy.whoistomove && simResult == 2)){		//loss for MCTS player
+		else if((game->whoistomove && simResult == 0) || (!game->whoistomove && simResult == 2)){		//loss for MCTS player
 			currentState->backPropagate(0, 1, 0);
 			// std::cout << "simresult != player???????" << std::endl;
 		}
@@ -470,12 +461,12 @@ void MCTSPlayer::doMove(){
 
 
     // root->printTree();
-    root->printRoot();
-    root->printAllChild();
+    // root->printRoot();
+    // root->printAllChild();
 
-	if(!root->isConsistent()){
-		std::cout << "root is not consistent" << std::endl;
-	}
+	// if(!root->isConsistent()){
+	// 	std::cout << "root is not consistent" << std::endl;
+	// }
 	// 	//goto: select node
 	// }
 	if(root->children[0] != NULL){
@@ -484,11 +475,9 @@ void MCTSPlayer::doMove(){
 
 
     std::vector<std::vector<int>> possiblemoves = game->availableMoves();
-	std::cout << "bestMove" << bestMove << std::endl;
-	std::cout << "possiblemoves size" << possiblemoves.size() << std::endl;
     game->doPossibleMove(possiblemoves[bestMove]);
     //TODO: Add whoistomove;
-    std::cout << "currentstate rooot" << std::endl;
+
 	currentState = root;
 	cleanTree();
 
@@ -497,7 +486,7 @@ void MCTSPlayer::doMove(){
 int MCTSPlayer::randomPlayout(){
     std::vector<std::vector<int>> possiblemoves;
     
-    for (int i = 0; i < 50; i++){
+    for (int i = 0; i < 100; i++){
 		possiblemoves = gameCopy.availableMoves();
         if (gameCopy.whoistomove && possiblemoves.empty())
             return 0; //black wins

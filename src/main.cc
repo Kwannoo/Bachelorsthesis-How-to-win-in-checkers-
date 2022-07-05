@@ -1,3 +1,7 @@
+int depth = 3;
+int gIterations = 1000;
+int moves = 0;
+
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -12,6 +16,8 @@
 
 void wrongInput(){
     std::cout << "please enter the right input" << std::endl;
+    std::cout << "./Checkers <numberOfGames> <gIterations> <depth> <print[0/1]> <playerMode1[0-3]> <playerMode2[0-3]> <seed>" << std::endl;
+    std::cout << "Player modes: 0)randomPlayer   1)minimaxPlayer   2)humanPlayer   3)MCTSPlayer" << std::endl;
 }
 
 int main (int argc, char* argv[]){
@@ -22,8 +28,8 @@ int main (int argc, char* argv[]){
 	}
 
     int numberOfGames = atoi(argv[1]);
-    int giterations = atoi(argv[2]);
-    int depth = atoi(argv[3]);
+    gIterations = atoi(argv[2]);
+    depth = atoi(argv[3]);
     bool print = atoi(argv[4]);
     int playerMode1 = atoi(argv[5]);
     int playerMode2 = atoi(argv[6]);
@@ -40,10 +46,10 @@ int main (int argc, char* argv[]){
             std::cout << "player1 = randomPlayer" << std::endl;
             break;
     case 1: player1 = new minimaxPlayer(game);
-            std::cout << "player1 = greedyPlayer" << std::endl;
+            std::cout << "player1 =  minimaxPlayer" << std::endl;
             break;
     case 2: player1 = new humanPlayerBlack(game);
-            std::cout << "player1 = MCPlayer" << std::endl;
+            std::cout << "player1 = humanPlayer" << std::endl;
             break;
     case 3: player1 = new MCTSPlayer(game);
             std::cout << "player1 = MCTSPlayer" << std::endl;
@@ -58,10 +64,10 @@ int main (int argc, char* argv[]){
             std::cout << "player2 = randomPlayer" << std::endl;
             break;
     case 1: player2 = new minimaxPlayer(game);
-            std::cout << "player2 = greedyPlayer" << std::endl;
+            std::cout << "player2 = minimaxPlayer" << std::endl;
             break;
     case 2: player2 = new humanPlayerWhite(game);
-            std::cout << "player2 = MCPlayer" << std::endl;
+            std::cout << "player2 = humanPlayer" << std::endl;
             break;
     case 3: player2 = new MCTSPlayer(game);
             std::cout << "player2 = MCTSPlayer" << std::endl;
@@ -73,55 +79,60 @@ int main (int argc, char* argv[]){
 
     int player1Wins = 0;
     int player2Wins = 0;
-    int ties = 0;
+    int draws = 0;
     double unused;
     int maximummoves = 100;
-    int moves = 0;
+    int totalmoves = 0;
     std::vector<std::vector<int>> possiblemoves;
 	
     for (int i = 0; i < numberOfGames; i++){
 		game->resetboard();
-		game->TestBoard();
-        do{
-			std::cout << "------------------------------" << std::endl;
-			
+		game->doRandomMove();
+        game->doRandomMove();
+        do{			
             if (!game->whoistomove){
-				std::cout << "black to move" << std::endl;
                 player1->doMove();
             }
             else{
-				std::cout << "white to move" << std::endl;
                 player2->doMove();
             }            
 			moves++;
             possiblemoves = game->availableMoves();
-			std::cout << "maximummoves: " << maximummoves << std::endl;
-			game->printboard();
-        } while (!possiblemoves.empty() && (moves < maximummoves));
-
-
-			std::cout << "go out while loop \n";
-			moves = 0;
-
-			game->printboard();
-
 			
-            if (game->whoistomove && possiblemoves.empty())
+        } while (!possiblemoves.empty() && (moves < maximummoves));
+ 
+
+            totalmoves += moves;
+			moves = 0;
+            game->printboard();
+			
+            if (game->whoistomove && possiblemoves.empty()){
                 std::cout << "black wins" << std::endl;
+                player1Wins++;
                 // return 0; //black wins
-            
-            else if (!game->whoistomove && possiblemoves.empty())
+            }
+            else if (!game->whoistomove && possiblemoves.empty()){
                 std::cout << "white wins" << std::endl;
+                player2Wins++;
+            }
                 // return 2; //white wins
-            
-            else 
+            else {
                 std::cout << "draw" << std::endl;
+                draws++;
+            }
+
                 //return 0;
 			
     }
+    std::cout << "player1 wins: " << player1Wins << std::endl;
+    std::cout << "player2 wins: " << player2Wins << std::endl;
+    std::cout << "draws: " << draws << std::endl;
+    std::cout << "average amount of moves: " << totalmoves/numberOfGames << std::endl;
+    
     delete player1;
     delete player2;
 	delete game;
+
     return 0;
 }
 

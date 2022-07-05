@@ -539,14 +539,12 @@ bool Checkers::FirstTakeBlack(){
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if (board[i][j] == 'b'){
-                std::cout << "first step true" << "i: " << i << "j: " << j <<std::endl;
                 if ((board[i+1][j-1] == 'w' || board[i+1][j-1] == 'W') && board[i+2][j-2] == 'o' ){
                     if (j-2 >= 0 && i+2 < 8)
                         return true;
                     
                 }
                 if ((board[i+1][j+1] == 'w' || board[i+1][j+1] == 'W') && board[i+2][j+2] == 'o' ){
-                    std::cout << "second set true?\n";
                     if (j+2 < 8 && i+2 < 8)
                         return true;
                     
@@ -558,16 +556,12 @@ bool Checkers::FirstTakeBlack(){
 }
 
 
-void Checkers::TestBoard(){
-        char board[8][8] = {{'o', 'b', 'o', 'W', 'o', 'W', 'o', 'o'}, {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-         {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'o', 'o'},
-         {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'o', 'o', 'w', 'o'}}; //white takes
+// void Checkers::TestBoard(){
+//         char board[8][8] = {{'o', 'b', 'o', 'W', 'o', 'W', 'o', 'o'}, {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
+//          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'o', 'o'},
+//          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'o', 'o', 'w', 'o'}}; //white takes
 
-        // char board[8][8] = {{'o', 'o', 'o', 'b', 'o', 'o', 'o', 'b'}, {'o', 'o', 'W', 'o', 'w', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-        //  {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-        //  {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}};
-
-}
+// }
 
 std::vector<std::vector<int>> Checkers::PossibleMovesWhite(){
     std::vector<std::vector<int>> possiblemoves;
@@ -589,13 +583,13 @@ std::vector<std::vector<int>> Checkers::PossibleMovesWhite(){
                 }
                 if (board[i][j] == 'W'){
                     if (board[i+1][j-1] == 'o'){
-                        if (i+1 < 8 && j-1 <= 0){
+                        if (i+1 < 8 && j-1 >= 0){
                             move = {i,j,i+1,j-1};
                             possiblemoves.push_back(move);
                         }
                     }
                     if (board[i+1][j+1] == 'o'){
-                        if (i+1 <= 8 && j+1 < 8){
+                        if (i+1 < 8 && j+1 < 8){
                             move = {i,j,i+1,j+1};
                             possiblemoves.push_back(move);
                         }
@@ -794,8 +788,8 @@ std::vector<std::vector<int>> Checkers::PossibleMovesBlack(){
                             possiblemoves.push_back(move);
                         }
                     }
-                    if (board[i+1][j+1] == 'o'){
-                        if (i+1 < 8 && j+1 < 8){
+                    if (board[i-1][j+1] == 'o'){
+                        if (i-1 >= 0 && j+1 < 8){
                             move = {i,j,i+1,j+1};
                             possiblemoves.push_back(move);
                         }
@@ -856,13 +850,12 @@ std::vector<std::vector<int>> Checkers::PossibleMovesBlackTake(){
                             move = {i, j, i-1, j+1};
                             possiblemoves.push_back(move);
                             PossibleMovesBlackTakeMore(i-2, j+2, possiblemoves, move);
-                            board[i][j] = board[i+2][j-2];
+                            board[i][j] = board[i-2][j+2];
                             board[i-1][j+1]  = Opponent;
                             board[i-2][j+2] = 'o';
                         }
                     }
                     if ((board[i-1][j-1] == 'w' || board[i-1][j-1] == 'W') && board[i-2][j-2] == 'o' ){
-                        std::cout << "do this shit" << std::endl;
                         if (j-2 >= 0 && i-2 >= 0){
                             Opponent = board[i-1][j-1];
                             board[i-1][j-1] = 'o'; //temporary take piece
@@ -870,7 +863,6 @@ std::vector<std::vector<int>> Checkers::PossibleMovesBlackTake(){
                             board[i][j] = 'o';
                             move = {i, j, i-1, j-1};
                             possiblemoves.push_back(move);
-                            std::cout << "do this next??" << std::endl;
                             PossibleMovesBlackTakeMore(i-2, j-2, possiblemoves, move);
                             board[i][j] = board[i-2][j-2];
                             board[i-1][j-1]  = Opponent;
@@ -1107,9 +1099,7 @@ std::vector<std::vector<int>> Checkers::availableMoves(){
         }
     }
     else{
-        std::cout << "go into available moves\n";
         if (FirstTakeBlack() || FirstTakeKing()){
-            std::cout << "firsttakeblack\n"; //TODO
             possiblemoves = PossibleMovesBlackTake();
         }
         else {
@@ -1125,18 +1115,10 @@ void Checkers::doRandomMove(){
     possiblemoves = availableMoves();
 
     size_t random = rand() % possiblemoves.size();
+
     doPossibleMove(possiblemoves[random]);
     //printboard();
 }
 
-//   0 1 2 3 4 5 6 7
-// 0 o b o W o W o o
-// 1 w o w o o o o o
-// 2 o o o o o o o o
-// 3 o o o o o o o o
-// 4 o o o o o b o o
-// 5 o o w o w o o o
-// 6 o o o o o o o o
-// 7 o o w o o o w o
 
 //https://github.com/kurebasu/Dots-and-Boxes/blob/master/src/MCTSPlayer.cc

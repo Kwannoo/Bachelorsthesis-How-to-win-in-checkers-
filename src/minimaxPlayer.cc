@@ -25,6 +25,12 @@ int minimaxPlayer::evaluate(){
             if (game->board[i][j] == 'b' || game->board[i][j] == 'B'){
                 score -= 5;
             }
+            if (game->board[i][j] == 'W')
+                score += 5;
+
+            if (game->board[i][j] == 'B')
+                score -= 5;
+            
         }
     }
     return score;
@@ -39,11 +45,11 @@ int minimaxPlayer::minimaxAlgorithm(int depth, int &bestmove){
     possiblemoves = game->availableMoves();
 
     if (possiblemoves.size() == 0 && game->whoistomove){ //white loses
-        return -1000;
+        return -1000 + moves;
     }
 
     if (possiblemoves.size() == 0 && !game->whoistomove){ //white loses
-        return 1000;
+        return 1000 - moves;
     }
 
     if (depth == 0){
@@ -90,7 +96,7 @@ void minimaxPlayer::doMove(){
     possiblemoves = game->availableMoves();
 
     int bestmove;
-    minimaxAlgorithm(5, bestmove);
+    minimaxAlgorithm(3, bestmove);
 
     game->whoistomove = currentwhoistomove;
    
