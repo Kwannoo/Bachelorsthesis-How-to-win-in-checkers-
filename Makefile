@@ -4,7 +4,7 @@ SRC_DIR = ./src
 SOURCES = $(shell find $(SRC_DIR)/ -name 'main.cc')
 OBJECTS = $(SOURCES:.c=.o)
 TARGET  = Checkers
-CC 		= g++ -Wall
+CC 		= g++ -Wall -g
 
 
 .PHONY: all clean

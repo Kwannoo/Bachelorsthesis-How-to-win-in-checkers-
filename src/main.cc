@@ -1,6 +1,9 @@
 int depth = 3;
 int gIterations = 1000;
 int moves = 0;
+int maximummoves = 100;
+int calls = 0;
+int calls2 = 0;
 
 #include <iostream>
 #include <stdlib.h>
@@ -13,6 +16,7 @@ int moves = 0;
 #include "MCTSPlayer.cc"
 #include "minimaxPlayer.cc"
 #include "randomPlayer.cc"
+#include "minimaxabPlayer.cc"
 
 void wrongInput(){
     std::cout << "please enter the right input" << std::endl;
@@ -54,6 +58,9 @@ int main (int argc, char* argv[]){
     case 3: player1 = new MCTSPlayer(game);
             std::cout << "player1 = MCTSPlayer" << std::endl;
             break;
+    case 4: player1 = new minimaxabPlayer(game);
+            std::cout << "player2 = minimaxAlphaBeta" << std::endl;
+            break;
     default:std::cout << "speler " << playerMode1 << " bestaat niet, we kiezen de random speler voor 1" << std::endl;
             player1 = new randomPlayer(game);
 
@@ -72,6 +79,9 @@ int main (int argc, char* argv[]){
     case 3: player2 = new MCTSPlayer(game);
             std::cout << "player2 = MCTSPlayer" << std::endl;
             break;
+    case 4: player2 = new minimaxabPlayer(game);
+            std::cout << "player2 = minimaxAlphaBeta" << std::endl;
+            break;
     default:std::cout << "speler " << playerMode2 << " bestaat niet, we kiezen de random speler voor 1" << std::endl;
             player2 = new randomPlayer(game);
 
@@ -81,7 +91,6 @@ int main (int argc, char* argv[]){
     int player2Wins = 0;
     int draws = 0;
     double unused;
-    int maximummoves = 100;
     int totalmoves = 0;
     std::vector<std::vector<int>> possiblemoves;
 	
@@ -89,13 +98,15 @@ int main (int argc, char* argv[]){
 		game->resetboard();
 		game->doRandomMove();
         game->doRandomMove();
-        do{			
-            if (!game->whoistomove){
-                player1->doMove();
-            }
-            else{
-                player2->doMove();
-            }            
+        
+        do{	
+
+        if (!game->whoistomove){
+            player1->doMove();
+        }
+        else{
+            player2->doMove();
+        }     
 			moves++;
             possiblemoves = game->availableMoves();
 			
@@ -103,7 +114,7 @@ int main (int argc, char* argv[]){
  
 
             totalmoves += moves;
-			moves = 0;
+			
             game->printboard();
 			
             if (game->whoistomove && possiblemoves.empty()){
@@ -121,16 +132,19 @@ int main (int argc, char* argv[]){
                 draws++;
             }
 
-                //return 0;
-			
+            std::cout << moves << " :--------------------------------------" << std::endl;
+			moves = 0;
     }
-    std::cout << "player1 wins: " << player1Wins << std::endl;
-    std::cout << "player2 wins: " << player2Wins << std::endl;
+
+    std::cout << "player1 black wins: " << player1Wins << std::endl;
+    std::cout << "player2 white wins: " << player2Wins << std::endl;
     std::cout << "draws: " << draws << std::endl;
     std::cout << "average amount of moves: " << totalmoves/numberOfGames << std::endl;
-    
+    std::cout << "average amount of minimax calls per game: " << calls/numberOfGames << std::endl;
+    std::cout << "average amount of minimaxab calls per game: " << calls2/numberOfGames << std::endl;
+
     delete player1;
-    delete player2;
+    // delete player2;
 	delete game;
 
     return 0;

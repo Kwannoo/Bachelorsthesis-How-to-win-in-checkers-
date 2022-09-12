@@ -33,6 +33,7 @@ class Checkers{
         bool FirstTakeWhite();
         bool FirstTakeBlack();
         bool FirstTakeKing();
+        bool FirstTakeKingsp();
         void doPossibleMove(std::vector<int> possiblemoves);
         int playthegame(int maxgamelength, int depth, bool print,
                         int &nrmoves, int gametypeW, int gametypeB);
@@ -110,7 +111,6 @@ void Checkers::printboard(){
         }
         std::cout << std::endl;
     }
-    std::cout << "--------------------------------------" << std::endl;
 }
 
 //*************************************************************************
@@ -521,12 +521,56 @@ bool Checkers::FirstTakeKing(){
                         return true;
                 }
                 if ((board[i+1][j-1] == Opponent || board[i+1][j-1] == Opponent+32) && board[i+2][j-2] == 'o' ){
-                    if (j-2 >= 0 && i+2 > 0)
+                    if (j-2 >= 0 && i+2 < 8)
                         return true;
                 }
                 if ((board[i+1][j+1] == Opponent || board[i+1][j+1] == Opponent+32) && board[i+2][j+2] == 'o' ){
                     if (j+2 < 8 && i+2 < 8)
                         return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Checkers::FirstTakeKingsp(){
+    char Player, Opponent;
+    
+    if (!whoistomove){
+        Player = 'B';
+        Opponent = 'W';
+    }
+    else{
+        Player = 'W';
+        Opponent = 'B';
+    }
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (board[i][j] == Player){
+                if ((board[i-1][j-1] == Opponent || board[i-1][j-1] == Opponent+32) && board[i-2][j-2] == 'o' ){
+                    if (j-2 >= 0 && i-2 >= 0){
+                        std::cout << "true1" << std::endl; 
+                        return true;
+                    }
+                }
+                if ((board[i-1][j+1] == Opponent || board[i-1][j+1] == Opponent+32) && board[i-2][j+2] == 'o' ){
+                    if (j+2 < 8 && i-2 >= 0){
+                    std::cout << "true2" << std::endl; 
+                        return true;
+                    }
+                }
+                if ((board[i+1][j-1] == Opponent || board[i+1][j-1] == Opponent+32) && board[i+2][j-2] == 'o' ){
+                    if (j-2 >= 0 && i+2 < 8){
+                    std::cout << "true3" << std::endl; 
+                        return true;
+                    }
+                }
+                if ((board[i+1][j+1] == Opponent || board[i+1][j+1] == Opponent+32) && board[i+2][j+2] == 'o' ){
+                    if (j+2 < 8 && i+2 < 8){
+                    std::cout << "true4" << std::endl; 
+                        return true;
+                    }
                 }
             }
         }
@@ -556,12 +600,24 @@ bool Checkers::FirstTakeBlack(){
 }
 
 
-// void Checkers::TestBoard(){
-//         char board[8][8] = {{'o', 'b', 'o', 'W', 'o', 'W', 'o', 'o'}, {'w', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'},
-//          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'b', 'o', 'o'}, {'o', 'o', 'w', 'o', 'w', 'o', 'o', 'o'},
-//          {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'w', 'o', 'o', 'o', 'w', 'o'}}; //white takes
+void Checkers::TestBoard(){
 
-// }
+         char testboard[8][8] = {{'o', 'W', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, 
+         {'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'}, {'o', 'w', 'o', 'o', 'o', 'w', 'o', 'o'}, {'o', 'o', 'o', 'o', 'w', 'o', 'o', 'o'}, {'o', 'o', 'o', 'B', 'o', 'o', 'o', 'o'},
+         {'o', 'o', 'w', 'o', 'o', 'o', 'o', 'o'}};
+
+    memcpy(board, testboard, 8*8*sizeof(char));
+//   0 1 2 3 4 5 6 7 
+// 0 o W o o o o o o
+// 1 o o o o o o o o
+// 2 o o o o o o o o
+// 3 o o o o o o o o
+// 4 o w o o o w o o
+// 5 o o o o w o o o
+// 6 o o o B o o o o
+// 7 o o w o o o o o
+
+}
 
 std::vector<std::vector<int>> Checkers::PossibleMovesWhite(){
     std::vector<std::vector<int>> possiblemoves;

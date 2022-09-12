@@ -75,6 +75,8 @@ void Node::cleanTree(){
 	gNumberOfNodes = 1;
 }
 
+
+
 bool Node::isLeafNode(){
 	return !(bool)(children.size());
 }
@@ -140,7 +142,7 @@ void Node::printAllChild(){
 }
 
 double Node::calcUCB1Value(){
-	double C = 0.4; //constant value
+	double C = 0.3; //constant value
 	int Wi = wins;
 	double ni = (double)getVisits();
 	int Ni = 0;
@@ -422,7 +424,6 @@ void MCTSPlayer::doMove(){
 	int player = 0; //necessary?
 	bool isLeafNode = false;
 	int bestMove = -1;
-	int gIterations = 1000;
 
     for(int i = 0; i < gIterations; ++i){
 		// std::cout << "BEGIN NUMBER OF GAMES: " << i << std::endl;
@@ -434,7 +435,7 @@ void MCTSPlayer::doMove(){
 		//simulate
 		simResult = simulate(ratio);
 	// 	//update the tree
-        if ((game->whoistomove && simResult == 2) || (!game->whoistomove && simResult == 0)){												//win for MCTS player
+        if ((game->whoistomove && simResult == 2) || (!game->whoistomove && simResult == 0)){		//win for MCTS player
 			currentState->backPropagate(1, 0, 0);
 			// std::cout << "simresult == player!!!!!" << std::endl;
 		}
@@ -478,7 +479,7 @@ void MCTSPlayer::doMove(){
     game->doPossibleMove(possiblemoves[bestMove]);
     //TODO: Add whoistomove;
 
-	currentState = root;
+	currentState = root; 
 	cleanTree();
 
 }
@@ -501,96 +502,3 @@ int MCTSPlayer::randomPlayout(){
     
 }
 
-
-
-
-
-
-// int Checkers::playthegame(int maxgamelength, int depth, bool print,
-//                         int &nrmoves, int gametypeW, int gametypeB){
-    
-    
-    
-
-//     int movecount = 0;
-    
-//     while (movecount < maxgamelength){
-//         if (print)
-//             printboard();
-
-//         std::vector<std::vector<int>> possiblemoves;
-//         if (whoistomove){ //white to move
-//             if (FirstTakeWhite() || FirstTakeKing()){
-//                 possiblemoves = PossibleMovesWhiteTake();
-//             }
-//             else {
-//                 possiblemoves = PossibleMovesWhite();
-//             }
-//             //         for (size_t i = 0; i < possiblemoves.size(); i++){
-//             // std::cout << "possiblemoves: ";
-//             //     for (size_t j = 0; j < possiblemoves[i].size(); j++){
-//             //         std::cout << " " << possiblemoves[i][j];
-//          //        }
-//             // std::cout << std::endl;
-//        // }
-//             if (possiblemoves.empty())
-//                 return 0; //black wins
-//             else{
-//                 switch (gametypeW){
-//                     case 0: //random move
-//                         doRandomMove();
-//                         break;
-//                     case 1:
-//                         DoMinimaxMove();
-//                         break;
-//                     case 2:
-//                         //DoMinimaxMoveAlphaBeta();
-//                         break;
-//                     case 3:
-//                         //DoMCTSmove();
-//                         break;
-//                 }
-//             }
-//         }
-//         else { //black to move
-//             if (FirstTakeBlack() || FirstTakeKing()){
-//                 possiblemoves = PossibleMovesBlackTake();
-//             }
-//             else {
-//                 possiblemoves = PossibleMovesBlack();
-//             }
-
-//         // for (size_t i = 0; i < possiblemoves.size(); i++){
-//         //     std::cout << "possiblemoves: ";
-//         //         for (size_t j = 0; j < possiblemoves[i].size(); j++){
-//         //             std::cout << " " << possiblemoves[i][j];
-//         //         }
-//         //     std::cout << std::endl;
-//         // }
-//             if (possiblemoves.empty())
-//                 return 2; //white wins
-//             else{
-//                 switch (gametypeB){
-//                     case 0: //random move
-//                         doRandomMove();
-//                         break;
-//                     case 1:
-//                         DoMinimaxMove();
-//                         break;
-//                     case 2:
-//                         //DoMinimaxMoveAlphaBeta();
-//                         break;
-//                     case 3:
-//                         DoMCTSMove();
-//                         break;
-//                 }
-//             }
-//         }
-//         movecount++;
-//         promote();
-        
-//     }
-//         nrmoves = movecount;
-//         return 1; //draw
-
-// }
