@@ -28,3 +28,5 @@ Replace the placeholders with the desired parameters:
 For example, to run a game with 1000 iterations of MCTS, a depth of 3 for minimax, printing enabled, both players as Minimax Players, and a seed of 123:
 
 ./Checkers 1 1000 3 1 1 1 123
+
+Disclaimer: The code has not been cleaned so comments still need to be added and code can be optimized
